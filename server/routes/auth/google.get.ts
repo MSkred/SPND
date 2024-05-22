@@ -9,22 +9,20 @@ export default oauth.googleEventHandler({
   async onSuccess(event, { user: gUser }) {
 
     const userPayload = {
-      google_id: gUser.sub,
+      googleId: gUser.sub,
       firstname: gUser.given_name,
       lastname: gUser.family_name,
       email: gUser.email,
       picture: gUser.picture,
-      locale: gUser.locale,
-      createdAt: new Date()
+      locale: gUser.locale
     }
 
-    const user = await useDrizzle().select().from(tables.users).where(eq(tables.users.google_id, userPayload.google_id)).get()
+    const user = await useDrizzle().select().from(tables.users).where(eq(tables.users.googleId, userPayload.googleId)).get()
 
     if (!user || userDataChanged(user, userPayload)) {
-      if (user) userPayload.createdAt = user.createdAt;
       await useDrizzle().insert(tables.users).values(userPayload)
         .onConflictDoUpdate({
-          target: tables.users.google_id,
+          target: tables.users.googleId,
           set: userPayload,
         })
         .execute()
@@ -49,7 +47,7 @@ interface GoogleUser {
 }
 
 function userDataChanged(user: User, gUser: GoogleUser) {
-  return user.google_id !== gUser.sub
+  return user.googleId !== gUser.sub
     || user.email !== gUser.email
     || user.firstname !== gUser.given_name
     || user.lastname !== gUser.family_name
