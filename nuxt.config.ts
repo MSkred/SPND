@@ -4,6 +4,8 @@ export default defineNuxtConfig({
   modules: ['@nuxthub/core', "@nuxt/eslint", "@nuxt/ui", "@nuxtjs/google-fonts", "@nuxtjs/i18n"],
   hub: {
     database: true,
+    kv: true,
+    blob: true
   },
   nitro: {
     experimental: {
@@ -12,6 +14,9 @@ export default defineNuxtConfig({
     }
   },
   extends: ['@nuxt/ui-pro'],
+  ui: {
+    icons: ['simple-icons']
+  },
   googleFonts: {
     families: {
       Roboto: [100, 300, 400, 500, 700, 900],
