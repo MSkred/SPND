@@ -10,9 +10,7 @@
         <UButton v-else to="/login" icon="i-heroicons-arrow-left-on-rectangle-20-solid" color="gray" variant="ghost" />
       </template>
     </UHeader>
-    <ImageGallery />
-    <RedirectsPanel />
-    <MessagesPanel />
+    <h1>hello guys !</h1>
   </main>
 </template>
 
