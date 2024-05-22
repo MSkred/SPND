@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   },
   extends: ['@nuxt/ui-pro'],
   ui: {
-    icons: ['simple-icons']
+    icons: ['simple-icons', 'heroicons']
   },
   css: ['~/assets/scss/main.scss'],
   googleFonts: {
