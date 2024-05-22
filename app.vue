@@ -6,5 +6,9 @@ useSeoMeta({
 </script>
 
 <template>
-  <NuxtPage />
+  <UMain>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </UMain>
 </template>
