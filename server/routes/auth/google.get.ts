@@ -6,30 +6,42 @@ export default oauth.googleEventHandler({
       access_type: 'offline',
     },
   },
-  async onSuccess(event, { user: gUser }) {
+  async onSuccess(event, result) {
 
-    const userPayload = {
-      googleId: gUser.sub,
-      firstname: gUser.given_name,
-      lastname: gUser.family_name,
-      email: gUser.email,
-      picture: gUser.picture,
-      locale: gUser.locale
-    }
+    const { user: gUser } = result
 
-    const user = await useDrizzle().select().from(tables.users).where(eq(tables.users.googleId, userPayload.googleId)).get()
+    const user = await useDrizzle().select().from(tables.users).where(eq(tables.users.googleId, gUser.sub)).get()
 
-    if (!user || userDataChanged(user, userPayload)) {
-      await useDrizzle().insert(tables.users).values(userPayload)
+    if (!user || userDataChanged(user, gUser)) {
+      await useDrizzle().insert(tables.users).values({
+        googleId: gUser.sub,
+        firstname: gUser.given_name,
+        lastname: gUser.family_name,
+        email: gUser.email,
+        picture: gUser.picture,
+        locale: gUser.locale
+      })
         .onConflictDoUpdate({
           target: tables.users.googleId,
-          set: userPayload,
+          set: {
+            firstname: gUser.given_name,
+            lastname: gUser.family_name,
+            email: gUser.email,
+            picture: gUser.picture,
+            locale: gUser.locale
+          },
         })
         .execute()
     }
     
     await setUserSession(event, {
-      user: userPayload
+      user: {
+        firstname: gUser.given_name,
+        lastname: gUser.family_name,
+        email: gUser.email,
+        picture: gUser.picture,
+        locale: gUser.locale
+      }
     })
 
     return sendRedirect(event, '/')
