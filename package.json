@@ -14,10 +14,12 @@
   "dependencies": {
     "@nuxt/eslint": "^0.3.12",
     "@nuxthub/core": "^0.5.17",
+    "drizzle-orm": "^0.30.10",
     "nuxt": "^3.11.2"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.3.12",
+    "drizzle-kit": "^0.21.2",
     "eslint": "^9.2.0",
     "vue-tsc": "^2.0.18",
     "wrangler": "^3.56.0"
