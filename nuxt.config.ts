@@ -25,6 +25,7 @@ export default defineNuxtConfig({
   ui: {
     icons: ['simple-icons']
   },
+  css: ['~/assets/scss/main.scss'],
   googleFonts: {
     families: {
       Roboto: [100, 300, 400, 500, 700, 900],
