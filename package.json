@@ -20,7 +20,8 @@
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/i18n": "^8.3.1",
     "drizzle-orm": "^0.30.10",
-    "nuxt": "^3.11.2"
+    "nuxt": "^3.11.2",
+    "nuxt-gtag": "^2.0.6"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.3.12",

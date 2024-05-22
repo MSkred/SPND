@@ -35,6 +35,9 @@ importers:
       nuxt:
         specifier: ^3.11.2
         version: 3.11.2(@opentelemetry/api@1.8.0)(@parcel/watcher@2.4.1)(@types/node@20.12.12)(@unocss/reset@0.60.3)(drizzle-orm@0.30.10(@cloudflare/workers-types@4.20240512.0)(@opentelemetry/api@1.8.0))(encoding@0.1.13)(eslint@9.3.0)(floating-vue@5.2.2(@nuxt/kit@3.11.2(rollup@4.17.2))(vue@3.4.27(typescript@5.4.5)))(fuse.js@6.6.2)(ioredis@5.4.1)(optionator@0.9.4)(rollup@4.17.2)(terser@5.31.0)(typescript@5.4.5)(unocss@0.60.3(postcss@8.4.38)(rollup@4.17.2)(vite@5.2.11(@types/node@20.12.12)(terser@5.31.0)))(vite@5.2.11(@types/node@20.12.12)(terser@5.31.0))(vue-tsc@2.0.19(typescript@5.4.5))
+      nuxt-gtag:
+        specifier: ^2.0.6
+        version: 2.0.6(rollup@4.17.2)
     devDependencies:
       '@nuxt/eslint-config':
         specifier: ^0.3.12
@@ -4032,6 +4035,9 @@ packages:
     resolution: {integrity: sha512-AW71TpxRHNg8MplQVju9tEFvXPvX42e0wPYknutSStDuAjV99vWTWYed4jxr/grk2FtKAuv2KvdJxcn2W59qyg==}
     engines: {node: ^16.10.0 || >=18.0.0}
     hasBin: true
+
+  nuxt-gtag@2.0.6:
+    resolution: {integrity: sha512-KjHujiwX4mtmgtHLMQB25NP3vxAuzsEqmZDkUoq9ZUSRLXly6FaPT97BTM4slr72eSfaoPGDeFyFxVvJhN4LVg==}
 
   nuxt-icon@0.6.10:
     resolution: {integrity: sha512-S9zHVA66ox4ZSpMWvCjqKZC4ZogC0s2z3vZs+M4D95YXGPEXwxDZu+insMKvkbe8+k7gvEmtTk0eq3KusKlxiw==}
@@ -10137,6 +10143,16 @@ snapshots:
   nuxi@3.11.1:
     optionalDependencies:
       fsevents: 2.3.3
+
+  nuxt-gtag@2.0.6(rollup@4.17.2):
+    dependencies:
+      '@nuxt/kit': 3.11.2(rollup@4.17.2)
+      defu: 6.1.4
+      pathe: 1.1.2
+      ufo: 1.5.3
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
 
   nuxt-icon@0.6.10(nuxt@3.11.2(@opentelemetry/api@1.8.0)(@parcel/watcher@2.4.1)(@types/node@20.12.12)(@unocss/reset@0.60.3)(drizzle-orm@0.30.10(@cloudflare/workers-types@4.20240512.0)(@opentelemetry/api@1.8.0))(encoding@0.1.13)(eslint@9.3.0)(floating-vue@5.2.2(@nuxt/kit@3.11.2(rollup@4.17.2))(vue@3.4.27(typescript@5.4.5)))(fuse.js@6.6.2)(ioredis@5.4.1)(optionator@0.9.4)(rollup@4.17.2)(terser@5.31.0)(typescript@5.4.5)(unocss@0.60.3(postcss@8.4.38)(rollup@4.17.2)(vite@5.2.11(@types/node@20.12.12)(terser@5.31.0)))(vite@5.2.11(@types/node@20.12.12)(terser@5.31.0))(vue-tsc@2.0.19(typescript@5.4.5)))(rollup@4.17.2)(vite@5.2.11(@types/node@20.12.12)(terser@5.31.0))(vue@3.4.27(typescript@5.4.5)):
     dependencies:

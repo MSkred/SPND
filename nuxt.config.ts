@@ -1,7 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@nuxthub/core', "@nuxt/eslint", "@nuxt/ui", "@nuxtjs/google-fonts", "@nuxtjs/i18n"],
+  modules: [
+    '@nuxthub/core',
+    "@nuxt/eslint",
+    "@nuxt/ui",
+    "@nuxtjs/google-fonts",
+    "@nuxtjs/i18n",
+    "nuxt-gtag"
+  ],
   hub: {
     database: true,
     kv: true,
