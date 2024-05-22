@@ -11,6 +11,7 @@ export default defineNuxtConfig({
       openAPI: true
     }
   },
+  extends: ['@nuxt/ui-pro'],
   googleFonts: {
     families: {
       Roboto: [100, 300, 400, 500, 700, 900],
