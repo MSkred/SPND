@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxtjs/google-fonts",
     "@nuxtjs/i18n",
-    "nuxt-gtag"
+    "nuxt-gtag",
+    "nuxt-auth-utils"
   ],
   hub: {
     database: true,
