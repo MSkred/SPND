@@ -10,8 +10,10 @@ export default oauth.googleEventHandler({
 
     const { user: gUser } = result
 
+    // Check if user already exist
     const user = await useDrizzle().select().from(tables.users).where(eq(tables.users.googleId, gUser.sub)).get()
 
+    // If user not exist OR user's data changed (re)insert user date
     if (!user || userDataChanged(user, gUser)) {
       await useDrizzle().insert(tables.users).values({
         googleId: gUser.sub,
@@ -21,19 +23,37 @@ export default oauth.googleEventHandler({
         picture: gUser.picture,
         locale: gUser.locale
       })
-        .onConflictDoUpdate({
-          target: tables.users.googleId,
-          set: {
-            firstname: gUser.given_name,
-            lastname: gUser.family_name,
-            email: gUser.email,
-            picture: gUser.picture,
-            locale: gUser.locale
-          },
-        })
-        .execute()
+      .onConflictDoUpdate({
+        target: tables.users.googleId,
+        set: {
+          firstname: gUser.given_name,
+          lastname: gUser.family_name,
+          email: gUser.email,
+          picture: gUser.picture,
+          locale: gUser.locale
+        },
+      })
+      .execute()
     }
-    
+
+    // Check if user already ve associate groups
+    const userGroups = await useDrizzle().select().from(tables.usersToGroups).where(eq(tables.usersToGroups.userId, user!.id)).get()
+
+    // If user don't ve group
+    // Create his privat group
+    // Link it to user
+    if (!userGroups) {
+      const group = await useDrizzle().insert(tables.groups).values({
+        name: 'Mon compte',
+        private: true,
+        objective: 0
+      }).returning().get();
+      const userGroup = await useDrizzle().insert(tables.usersToGroups).values({
+        userId: user!.id,
+        groupId: group.id
+      }).returning();
+    }
+
     await setUserSession(event, {
       user: {
         firstname: gUser.given_name,

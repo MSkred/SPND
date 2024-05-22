@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { t, locale, setLocale } = useI18n()
+const { loggedIn, user, session, clear } = useUserSession()
+const { t, locale } = useI18n()
 
 definePageMeta({
   layout: 'auth'
@@ -26,15 +27,10 @@ const validate = (state: any) => {
   return errors
 }
 
-
-const { loggedIn, user, session, clear } = useUserSession()
-console.log('session is', session);
-console.log('user is', user);
 const providers = computed(() => [
   {
-    label: session.value.user?.google || t('button_continue_google'),
+    label: t('button_continue_google'),
     to: '/auth/google',
-    disabled: Boolean(user.value?.google),
     icon: 'i-simple-icons-google',
   },
 ].map(p => ({
