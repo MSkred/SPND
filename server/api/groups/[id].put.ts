@@ -5,8 +5,8 @@ export default defineEventHandler(async (event) => {
   
   const params = await getValidatedRouterParams(event, object({
     id: number({ coerce: true }),
-  }).parse,
-  )
+  }).parse,)
+  
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
     currency_iso_code: string(),

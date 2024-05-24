@@ -18,7 +18,6 @@ const schema = object({
 })
 
 type Schema = output<typeof schema>
-console.log('props is ', props);
 const state = reactive({
   name: props.group.name,
   currency_iso_code: props.group.currencyIsoCode
