@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
   // Verify body key types
   const body = await readValidatedBody(event, object({
-    name: string(),
+    name: string().min(2, { message: "Must be 2 or more characters long" }),
     currency_iso_code: string(),
     user_id: number()
   }).parse)

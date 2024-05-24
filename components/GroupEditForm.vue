@@ -13,7 +13,7 @@ const emits = defineEmits<{
 }>()
 
 const schema = object({
-  name: string({ message: 'Obligatoire' }),
+  name: string({ message: 'Obligatoire' }).min(2, { message: "Le nom doit faire minimum 2 caractères" }),
   currency_iso_code: string({ message: 'Obligatoire' }),
 })
 
