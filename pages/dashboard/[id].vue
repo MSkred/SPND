@@ -14,10 +14,10 @@
         <GroupCreateForm @close="onFormClose()" />
       </UDashboardModal>
 
-      <!-- <UDashboardModal v-model="isEditCategoryModalOpen" title="Edit category"
-        description="Be careful with this action, if could affect the system." :ui="{ width: 'sm:max-w-md' }">
-        <CategoriesEditForm v-if="editCategory" :category="editCategory" @close="onFormClose()" />
-      </UDashboardModal> -->
+      <UDashboardModal v-model="updateModalOpen" title="Modification du groupe"
+        description="Modifier un group peu avoir un impacte sur se qu'il contient et les utilisateurs" :ui="{ width: 'sm:max-w-md' }">
+        <GroupEditForm v-if="currentGroup" :group="currentGroup" @close="onFormClose()" />
+      </UDashboardModal>
 
       <UDashboardToolbar>
         <template #right>
@@ -41,8 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Groups } from '~/server/utils/drizzle'
-import GroupCreateForm from '../../components/GroupCreateForm.vue';
+import { type Group } from '~/server/utils/drizzle'
 const router = useRouter();
 const route = useRoute();
 definePageMeta({
@@ -78,12 +77,14 @@ const defaultColumns = [{
 const selectedColumns = ref(defaultColumns)
 const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
 // Tables actions row
-const items = (row) => {
+const items = (row: Group) => {
+  console.log('row is ', row);
   let items = [
     [{
       label: 'Editer',
       icon: 'i-heroicons-pencil-square-20-solid',
       click: () => {
+        currentGroup.value = row
         updateModalOpen.value = true;
       }
     }],
@@ -102,14 +103,14 @@ const items = (row) => {
   return items
 }
 // Table data
-const { data: categories, refresh, pending } = await useFetch<Groups[]>(`/api/users/${route.params.id}/groups`, {
+const { data: categories, refresh, pending } = await useFetch<Group[]>(`/api/users/${route.params.id}/groups`, {
   deep: false,
   lazy: true,
   default: () => [],
 })
 function onFormClose() {
   createModalOpen.value = false
-  // isEditCategoryModalOpen.value = false
+  updateModalOpen.value = false
   refresh()
 }
 const createModalOpen = ref(false)

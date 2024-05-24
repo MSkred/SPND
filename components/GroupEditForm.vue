@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import { object, string, type output } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
-const { user } = useUserSession();
+import { type Group } from '~/server/utils/drizzle'
 
+const props = defineProps<{
+  group: Group
+}>()
 const toast = useToast()
 
 const emits = defineEmits<{
@@ -15,21 +18,20 @@ const schema = object({
 })
 
 type Schema = output<typeof schema>
-
+console.log('props is ', props);
 const state = reactive({
-  name: undefined,
-  currency_iso_code: undefined,
-  user_id: user.value.id
+  name: props.group.name,
+  currency_iso_code: props.group.currencyIsoCode
 })
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
-    await $fetch('/api/groups', {
-      method: 'POST',
+    await $fetch(`/api/groups/${props.group.id}`, {
+      method: 'PUT',
       body: event.data,
     })
     toast.add({
       icon: 'i-heroicons-check-circle',
-      title: `Le groupe "${event.data.name}" a bien été créé.`,
+      title: `Le groupe "${event.data.name}" a bien été modifié.`,
       color: 'green',
     })
     emits('close')
@@ -66,7 +68,7 @@ const { data: currencies } = await useFetch<Group[]>(`/api/currency`, {
     </UFormGroup>
     <div class="flex flex-row justify-end">
       <UButton type="submit">
-        Créer
+        Modifier
       </UButton>
     </div>
   </UForm>
