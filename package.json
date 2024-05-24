@@ -23,7 +23,8 @@
     "drizzle-orm": "^0.30.10",
     "nuxt": "^3.11.2",
     "nuxt-auth-utils": "^0.0.25",
-    "nuxt-gtag": "^2.0.6"
+    "nuxt-gtag": "^2.0.6",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.3.12",

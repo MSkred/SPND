@@ -11,3 +11,8 @@ export function useDrizzle() {
 
 export type User = typeof schema.users.$inferSelect
 export type Groups = typeof schema.groups.$inferSelect
+export type Boards = typeof schema.boards.$inferSelect
+export type Categories = typeof schema.categories.$inferSelect
+export type Tags = typeof schema.tags.$inferSelect
+export type Expenses = typeof schema.expenses.$inferSelect
+export type Currencies = typeof schema.currencies.$inferSelect
