@@ -9,11 +9,10 @@ CREATE TABLE `boards` (
 	`endDate` text,
 	`today` integer,
 	`group_id` integer NOT NULL,
-	`currency_id` integer NOT NULL,
+	`currency_iso_code` text NOT NULL,
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL,
-	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`currency_id`) REFERENCES `currencies`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `categories` (
@@ -47,24 +46,22 @@ CREATE TABLE `expenses` (
 	`board_id` integer NOT NULL,
 	`tag_id` integer,
 	`group_id` integer NOT NULL,
-	`currency_id` integer NOT NULL,
+	`currency_iso_code` text NOT NULL,
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL,
 	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`board_id`) REFERENCES `boards`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`currency_id`) REFERENCES `currencies`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `groups` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`private` integer DEFAULT false,
-	`currency_id` integer NOT NULL,
+	`currency_iso_code` text NOT NULL,
 	`created_at` text NOT NULL,
-	`updated_at` text NOT NULL,
-	FOREIGN KEY (`currency_id`) REFERENCES `currencies`(`id`) ON UPDATE no action ON DELETE no action
+	`updated_at` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `tags` (

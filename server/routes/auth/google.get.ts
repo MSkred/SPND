@@ -49,7 +49,7 @@ export default oauth.googleEventHandler({
       const group = await useDrizzle().insert(tables.groups).values({
         name: 'Mon compte',
         private: true,
-        currencyId: eurCurrency!.id
+        currencyIsoCode: eurCurrency!.isoCode
       }).returning().get();
       await useDrizzle().insert(tables.usersToGroups).values({
         userId: user!.id,

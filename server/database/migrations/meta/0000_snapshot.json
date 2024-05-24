@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "7f74ea13-a2bb-49c1-bca6-7fde02970e16",
+  "id": "e31cd9c3-af3a-4335-9916-4332db0d6409",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "boards": {
@@ -77,9 +77,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "integer",
+        "currency_iso_code": {
+          "name": "currency_iso_code",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -107,19 +107,6 @@
           "tableTo": "groups",
           "columnsFrom": [
             "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "boards_currency_id_currencies_id_fk": {
-          "name": "boards_currency_id_currencies_id_fk",
-          "tableFrom": "boards",
-          "tableTo": "currencies",
-          "columnsFrom": [
-            "currency_id"
           ],
           "columnsTo": [
             "id"
@@ -335,9 +322,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "integer",
+        "currency_iso_code": {
+          "name": "currency_iso_code",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -410,19 +397,6 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        },
-        "expenses_currency_id_currencies_id_fk": {
-          "name": "expenses_currency_id_currencies_id_fk",
-          "tableFrom": "expenses",
-          "tableTo": "currencies",
-          "columnsFrom": [
-            "currency_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -453,9 +427,9 @@
           "autoincrement": false,
           "default": false
         },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "integer",
+        "currency_iso_code": {
+          "name": "currency_iso_code",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -476,21 +450,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "groups_currency_id_currencies_id_fk": {
-          "name": "groups_currency_id_currencies_id_fk",
-          "tableFrom": "groups",
-          "tableTo": "currencies",
-          "columnsFrom": [
-            "currency_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },

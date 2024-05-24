@@ -16,7 +16,7 @@ export const groups = sqliteTable('groups', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   private: integer('private', { mode: 'boolean' }).default(false),
-  currencyId: integer('currency_id').notNull().references(() => currencies.id),
+  currencyIsoCode: text('currency_iso_code').notNull(),
   createdAt: text('created_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text('updated_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 })
@@ -31,7 +31,7 @@ export const expenses = sqliteTable('expenses', {
   boardId: integer('board_id').notNull().references(() => boards.id),
   tagId: integer('tag_id').references(() => tags.id),
   groupId: integer('group_id').notNull().references(() => groups.id),
-  currencyId: integer('currency_id').notNull().references(() => currencies.id),
+  currencyIsoCode: text('currency_iso_code').notNull(),
   createdAt: text('created_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text('updated_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 })
@@ -57,7 +57,7 @@ export const boards = sqliteTable('boards', {
   endDate: text('endDate'),
   today: integer('today', { mode: 'boolean' }),
   groupId: integer('group_id').notNull().references(() => groups.id),
-  currencyId: integer('currency_id').notNull().references(() => currencies.id),
+  currencyIsoCode: text('currency_iso_code').notNull(),
   createdAt: text('created_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text('updated_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
 })

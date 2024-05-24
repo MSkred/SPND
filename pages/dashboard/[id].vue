@@ -29,7 +29,6 @@
           </USelectMenu>
         </template>
       </UDashboardToolbar>
-
       <UTable :columns="columns" :rows="categories" :loading="pending">
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
@@ -64,8 +63,8 @@ const defaultColumns = [{
   key: 'private',
   label: 'Privé'
 }, {
-  key: 'currencyId',
-  label: 'currency ID'
+  key: 'currencyIsoCode',
+  label: 'Devise'
 }, {
   key: 'createdAt',
   label: 'Date de création'
