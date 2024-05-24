@@ -59,11 +59,12 @@ export default oauth.googleEventHandler({
 
     await setUserSession(event, {
       user: {
+        id: user!.id,
         firstname: gUser.given_name,
         lastname: gUser.family_name,
         email: gUser.email,
         picture: gUser.picture,
-        locale: gUser.locale
+        locale: gUser.locale,
       }
     })
 

@@ -45,7 +45,6 @@ import { type Groups } from '~/server/utils/drizzle'
 import GroupCreateForm from '../../components/GroupCreateForm.vue';
 const router = useRouter();
 const route = useRoute();
-const { loggedIn, clear } = useUserSession()
 definePageMeta({
   layout: 'admin',
 })
@@ -116,4 +115,5 @@ function onFormClose() {
 const createModalOpen = ref(false)
 const updateModalOpen = ref(false)
 const currentGroup = ref<Group | null>(null)
+
 </script>

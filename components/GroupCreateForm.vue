@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { object, string, type output } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
+const { user } = useUserSession();
 
 const toast = useToast()
 
@@ -10,14 +11,16 @@ const emits = defineEmits<{
 
 const schema = object({
   name: string({ message: 'Obligatoire' }),
+  currency_iso_code: string({ message: 'Obligatoire' }),
 })
 
 type Schema = output<typeof schema>
 
 const state = reactive({
   name: undefined,
+  currency_iso_code: undefined,
+  user_id: user.value.id
 })
-
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     await $fetch('/api/groups', {
@@ -43,14 +46,24 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     }
   }
 }
+const { data: currencies } = await useFetch<Groups[]>(`/api/currency`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
 </script>
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormGroup label="Nom du group" name="name">
+    <UFormGroup label="Nom du groupe" name="name">
       <UInput placeholder="ex: Ménage, Tour du monde, …" v-model="state.name" />
     </UFormGroup>
+    <UFormGroup label="Devise" name="currency_iso_code">
 
+      <USelectMenu v-model="state.currency_iso_code" searchable-placeholder="Sélection de la devise"
+        :options="currencies" placeholder="Choix de la devise…" value-attribute="isoCode" searchable
+        option-attribute="isoCode" />
+    </UFormGroup>
     <div class="flex flex-row justify-end">
       <UButton type="submit">
         Créer
