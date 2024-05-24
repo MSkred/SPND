@@ -38,6 +38,9 @@ export default oauth.googleEventHandler({
 
     // Check if user already ve associate groups
     const userGroups = await useDrizzle().select().from(tables.usersToGroups).where(eq(tables.usersToGroups.userId, user!.id)).get()
+    
+    // Get EUR currency
+    const eurCurrency = await useDrizzle().select().from(tables.currencies).where(eq(tables.currencies.isoCode, 'EUR')).get()
 
     // If user don't ve group
     // Create his privat group
@@ -46,9 +49,9 @@ export default oauth.googleEventHandler({
       const group = await useDrizzle().insert(tables.groups).values({
         name: 'Mon compte',
         private: true,
-        objective: 0
+        currencyId: eurCurrency!.id
       }).returning().get();
-      const userGroup = await useDrizzle().insert(tables.usersToGroups).values({
+      await useDrizzle().insert(tables.usersToGroups).values({
         userId: user!.id,
         groupId: group.id
       }).returning();
