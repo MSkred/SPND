@@ -68,7 +68,7 @@ export default oauth.googleEventHandler({
       }
     })
 
-    return sendRedirect(event, `/dashboard/${user!.id}`)
+    return sendRedirect(event, `/`)
   },
 })
 
