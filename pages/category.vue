@@ -11,12 +11,12 @@
 
       <UDashboardModal v-model="createModalOpen" title="Nouvelle catégorie"
         description="Créer une nouvelle catégorie dans votre système" :ui="{ width: 'sm:max-w-md' }">
-        <GroupCreateForm @close="onFormClose()" />
+        <CategoryCreateForm @close="onFormClose()" />
       </UDashboardModal>
 
       <UDashboardModal v-model="updateModalOpen" title="Modification de la catégorie"
         :ui="{ width: 'sm:max-w-md' }">
-        <GroupEditForm v-if="currentCategory" :group="currentCategory" @close="onFormClose()" />
+        <CategoryEditForm v-if="currentCategory" :category="currentCategory" @close="onFormClose()" />
       </UDashboardModal>
 
       <UDashboardModal v-if="currentCategory" v-model="deleteModalOpen"
@@ -56,33 +56,27 @@
 <script setup lang="ts">
 import { type Category } from '~/server/utils/drizzle'
 const router = useRouter();
+const route = useRoute();
 const { user } = useUserSession();
 
 useSeoMeta({
   title: 'Dashboard',
 })
 // Table columns
-const defaultColumns = [{
-  key: 'id',
-  label: 'ID'
-}, {
-  key: 'name',
-  label: 'Nom'
-}, {
-  key: 'createdAt',
-  label: 'Date de création'
-}, {
-  key: 'updatedAt',
-  label: 'Date de modification'
-}, {
-  key: 'actions',
-  label: 'Actions'
-}
+const defaultColumns = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Nom' },
+  { key: 'icon', label: 'Icône' },
+  { key: 'color', label: 'Couleur' },
+  { key: 'createdAt', label: 'Date de création' },
+  { key: 'updatedAt', label: 'Date de modification' },
+  { key: 'actions', label: 'Actions' }
 ]
+
 const selectedColumns = ref(defaultColumns)
 const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
 // Tables actions row
-const items = (row: Group) => {
+const items = (row: Category) => {
   console.log('row is ', row);
   let items = [
     [{
@@ -112,7 +106,7 @@ const items = (row: Group) => {
   return items
 }
 // Table data
-const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/users/${user.value.id}/category`, {
+const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories?group=${route.query.group}`, {
   deep: false,
   lazy: true,
   default: () => [],
@@ -127,7 +121,7 @@ function onFormClose() {
 }
 const createModalOpen = ref(false)
 const updateModalOpen = ref(false)
-const currentCategory = ref<Group | null>(null)
+const currentCategory = ref<Category | null>(null)
 const deleteModalOpen = ref(false)
 const loading = ref(false)
 const toast = useToast()
