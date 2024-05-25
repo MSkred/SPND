@@ -35,7 +35,7 @@ const links = [ {
   }, {
     id: 'inbox',
     label: 'Tags',
-  icon: 'i-heroicons-tag-20-solid',
+    icon: 'i-heroicons-tag-20-solid',
     to: '/tag',
     // badge: '4',
     tooltip: {

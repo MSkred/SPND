@@ -1,32 +1,31 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Tags" :badge="categories.length">
+      <UDashboardNavbar title="Tags" :badge="tags.length">
         <template #right>
-          <UInput ref="input" v-model="q" icon="i-heroicons-funnel" autocomplete="off"
-            placeholder="Filtrer les catégories…" class="hidden lg:block" @keydown.esc="$event.target.blur()">
+          <UInput ref="input" v-model="q" icon="i-heroicons-funnel" autocomplete="off" placeholder="Filtrer les tags"
+            class="hidden lg:block" @keydown.esc="$event.target.blur()">
             <template #trailing>
               <UKbd value="/" />
             </template>
           </UInput>
 
-          <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray"
-            @click="createModalOpen = true" />
+          <UButton label="Nouveau tag" trailing-icon="i-heroicons-plus" color="gray" @click="createModalOpen = true" />
         </template>
       </UDashboardNavbar>
 
-      <UDashboardModal v-model="createModalOpen" title="Nouvelle catégorie"
-        description="Créer une nouvelle catégorie dans votre système" :ui="{ width: 'sm:max-w-md' }">
-        <CategoryCreateForm @close="onFormClose()" />
+      <UDashboardModal v-model="createModalOpen" title="Nouveau tag"
+        description="Créer une nouveau tag dans votre système" :ui="{ width: 'sm:max-w-md' }">
+        <TagCreateForm @close="onFormClose()" />
       </UDashboardModal>
 
-      <UDashboardModal v-model="updateModalOpen" title="Modification de la catégorie" :ui="{ width: 'sm:max-w-md' }">
-        <CategoryEditForm v-if="currentCategory" :category="currentCategory" @close="onFormClose()" />
+      <UDashboardModal v-model="updateModalOpen" title="Modification du tag" :ui="{ width: 'sm:max-w-md' }">
+        <TagEditForm v-if="currentTag" :tag="currentTag" @close="onFormClose()" />
       </UDashboardModal>
 
-      <UDashboardModal v-if="currentCategory" v-model="deleteModalOpen"
-        :title="`Suppression de la catégorie : ${currentCategory.name}`"
-        :description="`Êtes-vous sûr de vouloir suprimer la catégorie : ${currentCategory.name} ?`"
+      <UDashboardModal v-if="currentTag" v-model="deleteModalOpen"
+        :title="`Suppression du tag : ${currentTag.name}`"
+        :description="`Êtes-vous sûr de vouloir suprimer le tag : ${currentTag.name} ?`"
         icon="i-heroicons-exclamation-circle" :ui="{
         icon: { base: 'text-red-500 dark:text-red-400' } as any,
         footer: { base: 'ml-16' } as any
@@ -53,7 +52,7 @@
           </USelectMenu>
         </template>
       </UDashboardToolbar>
-      <UTable :columns="columns" :rows="categories" :loading="pending">
+      <UTable :columns="columns" :rows="tags" :loading="pending">
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
             <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
@@ -65,11 +64,9 @@
 </template>
 
 <script setup lang="ts">
-import { type Category } from '~/server/utils/drizzle'
-const router = useRouter();
-const route = useRoute();
-const { user } = useUserSession();
+import { type Tag } from "~/server/utils/drizzle";
 
+const route = useRoute();
 const q = ref('')
 useSeoMeta({
   title: 'Dashboard',
@@ -88,13 +85,13 @@ const defaultColumns = [
 const selectedColumns = ref(defaultColumns)
 const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
 // Tables actions row
-const items = (row: Category) => {
+const items = (row: Tag) => {
   let items = [
     [{
       label: 'Editer',
       icon: 'i-heroicons-pencil-square-20-solid',
       click: () => {
-        currentCategory.value = row
+        currentTag.value = row
         updateModalOpen.value = true;
       }
     }],
@@ -109,7 +106,7 @@ const items = (row: Category) => {
         label: 'Supprimer',
         icon: 'i-heroicons-trash-20-solid',
         click: () => {
-          currentCategory.value = row;
+          currentTag.value = row;
           deleteModalOpen.value = true;
         }
       }])
@@ -117,7 +114,7 @@ const items = (row: Category) => {
   return items
 }
 // Table data
-const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories?group=${route.query.group}`, {
+const { data: tags, refresh, pending } = await useFetch<Tag[]>(`/api/tags?group=${route.query.group}`, {
   deep: false,
   lazy: true,
   default: () => [],
@@ -126,13 +123,13 @@ function onFormClose() {
   createModalOpen.value = false
   updateModalOpen.value = false
   deleteModalOpen.value = false
-  currentCategory.value = null;
+  currentTag.value = null;
   loading.value = false;
   refresh()
 }
 const createModalOpen = ref(false)
 const updateModalOpen = ref(false)
-const currentCategory = ref<Category | null>(null)
+const currentTag = ref<Tag | null>(null)
 const deleteModalOpen = ref(false)
 const loading = ref(false)
 const toast = useToast()
@@ -140,12 +137,12 @@ const toast = useToast()
 async function onDelete() {
   loading.value = true
   try {
-    await $fetch(`/api/categories/${currentCategory.value.id}`, {
+    await $fetch(`/api/tags/${currentTag.value.id}`, {
       method: 'DELETE'
     })
     toast.add({
       icon: 'i-heroicons-check-circle',
-      title: `La catégorie "${currentCategory.value.name}" a bien été supprimé.`,
+      title: `Le tag "${currentTag.value.name}" a bien été supprimé.`,
       color: 'green',
     })
     onFormClose()
