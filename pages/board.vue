@@ -89,7 +89,7 @@ defineShortcuts({
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Catégories" :badge="users.length">
+      <UDashboardNavbar title="Tableaux" :badge="users.length">
         <template #right>
           <UInput ref="input" v-model="q" icon="i-heroicons-funnel" autocomplete="off"
             placeholder="Filtrer les catégories…" class="hidden lg:block" @keydown.esc="$event.target.blur()">

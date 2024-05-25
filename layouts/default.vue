@@ -7,7 +7,7 @@ const links = [ {
   id: 'inbox',
   label: 'Liste des dépenses',
   icon: 'i-heroicons-list-bullet-20-solid',
-  to: '/',
+  to: '/expense',
   // badge: '4',
   tooltip: {
     text: 'Liste',
@@ -17,7 +17,7 @@ const links = [ {
     id: 'home',
     label: 'Tableau des dépenses',
     icon: 'i-heroicons-table-cells-20-solid',
-    to: '/inbox',
+    to: '/board',
     tooltip: {
       text: 'Tableau',
       shortcuts: ['G', 'H']
@@ -36,7 +36,7 @@ const links = [ {
     id: 'inbox',
     label: 'Tags',
   icon: 'i-heroicons-tag-20-solid',
-    to: '/inbox',
+    to: '/tag',
     // badge: '4',
     tooltip: {
       text: 'Liste',
