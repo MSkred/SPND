@@ -55,11 +55,10 @@ const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormGroup label="Nom du groupe" name="name">
+    <UFormGroup label="Nom du groupe" name="name" required>
       <UInput placeholder="ex: Ménage, Tour du monde, …" v-model="state.name" />
     </UFormGroup>
-    <UFormGroup label="Devise" name="currency_iso_code">
-
+    <UFormGroup label="Devise" name="currency_iso_code" required>
       <USelectMenu v-model="state.currency_iso_code" searchable-placeholder="Sélection de la devise"
         :options="currencies" placeholder="Choix de la devise…" value-attribute="isoCode" searchable
         option-attribute="isoCode" />
