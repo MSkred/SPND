@@ -46,7 +46,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     }
   }
 }
-const { data: currencies } = await useFetch<Group[]>(`/api/currency`, {
+const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
   deep: false,
   lazy: true,
   default: () => [],
