@@ -15,11 +15,11 @@ const links = [ {
   }
 }, {
     id: 'home',
-    label: 'Tableau des dépenses',
+    label: 'Tableaux',
     icon: 'i-heroicons-table-cells-20-solid',
     to: '/board',
     tooltip: {
-      text: 'Tableau',
+      text: 'Tableaux',
       shortcuts: ['G', 'H']
     }
   },{
@@ -29,7 +29,7 @@ const links = [ {
     to: '/category',
     // badge: '4',
     tooltip: {
-      text: 'Liste',
+      text: 'Catégories',
       shortcuts: ['G', 'I']
     }
   }, {
@@ -39,14 +39,14 @@ const links = [ {
     to: '/tag',
     // badge: '4',
     tooltip: {
-      text: 'Liste',
+      text: 'Tags',
       shortcuts: ['G', 'I']
     }
   }, {
   id: 'users',
   label: 'Utilisateurs',
   icon: 'i-heroicons-user-group',
-  to: '/users',
+  to: '/',
   tooltip: {
     text: 'Utilisateurs',
     shortcuts: ['G', 'U']
@@ -58,11 +58,11 @@ const links = [ {
   icon: 'i-heroicons-cog-8-tooth',
   children: [{
     label: 'Général',
-    to: '/settings',
+    to: '/',
     exact: true
   }, {
     label: 'Membre',
-    to: '/settings/members'
+    to: '/'
   }],
   tooltip: {
     text: 'Paramètres',
@@ -73,7 +73,7 @@ const links = [ {
 const footerLinks = [{
   label: 'Inviter un utilisateur',
   icon: 'i-heroicons-plus',
-  to: '/settings/members'
+  to: '/'
 }]
 
 const groups = [{
@@ -127,9 +127,9 @@ const groups = [{
     <slot />
 
     <!-- ~/components/HelpSlideover.vue -->
-    <HelpSlideover />
+    <!-- <HelpSlideover /> -->
     <!-- ~/components/NotificationsSlideover.vue -->
-    <NotificationsSlideover />
+    <!-- <NotificationsSlideover /> -->
 
     <ClientOnly>
       <LazyUDashboardSearch :groups="groups" />

@@ -13,7 +13,6 @@ const defaultColumns = [{
     label: 'Actions'
   }]
 const items = (row: Category) => {
-  console.log('row is ', row);
   let items = [
     [{
       label: 'Editer',
@@ -124,7 +123,7 @@ defineShortcuts({
       <UDashboardModal v-model="isNewUserModalOpen" title="Nouvelle catégorie"
         description="Ajouter une nouvelle catégorie au système" :ui="{ width: 'sm:max-w-md' }">
         <!-- ~/components/users/UsersForm.vue -->
-        <UsersForm @close="isNewUserModalOpen = false" />
+        <!-- <UsersForm @close="isNewUserModalOpen = false" /> -->
       </UDashboardModal>
 
       <UTable v-model="selected" v-model:sort="sort" :rows="users" :columns="columns" :loading="pending"

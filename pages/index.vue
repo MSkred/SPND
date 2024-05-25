@@ -5,7 +5,6 @@
         <template #right>
           <UButton label="Nouveau groupe" trailing-icon="i-heroicons-plus" color="gray"
             @click="createModalOpen = true" />
-          <RefreshButton :loading="pending" @click="refresh" />
         </template>
       </UDashboardNavbar>
 
@@ -90,7 +89,6 @@ const selectedColumns = ref(defaultColumns)
 const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
 // Tables actions row
 const items = (row: Group) => {
-  console.log('row is ', row);
   let items = [
     [{
       label: 'Editer',

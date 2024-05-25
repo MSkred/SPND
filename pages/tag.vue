@@ -1,25 +1,100 @@
-<script lang="ts" setup>
-import { type Category } from '~/server/utils/drizzle';
+<template>
+  <UDashboardPage>
+    <UDashboardPanel grow>
+      <UDashboardNavbar title="Tags" :badge="categories.length">
+        <template #right>
+          <UInput ref="input" v-model="q" icon="i-heroicons-funnel" autocomplete="off"
+            placeholder="Filtrer les catégories…" class="hidden lg:block" @keydown.esc="$event.target.blur()">
+            <template #trailing>
+              <UKbd value="/" />
+            </template>
+          </UInput>
 
-const defaultColumns = [{
-  key: 'id',
-  label: '#'
-}, {
-  key: 'name',
-  label: 'Nom',
-  sortable: true
-  }, {
-    key: 'actions',
-    label: 'Actions'
-  }]
+          <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray"
+            @click="createModalOpen = true" />
+        </template>
+      </UDashboardNavbar>
+
+      <UDashboardModal v-model="createModalOpen" title="Nouvelle catégorie"
+        description="Créer une nouvelle catégorie dans votre système" :ui="{ width: 'sm:max-w-md' }">
+        <CategoryCreateForm @close="onFormClose()" />
+      </UDashboardModal>
+
+      <UDashboardModal v-model="updateModalOpen" title="Modification de la catégorie" :ui="{ width: 'sm:max-w-md' }">
+        <CategoryEditForm v-if="currentCategory" :category="currentCategory" @close="onFormClose()" />
+      </UDashboardModal>
+
+      <UDashboardModal v-if="currentCategory" v-model="deleteModalOpen"
+        :title="`Suppression de la catégorie : ${currentCategory.name}`"
+        :description="`Êtes-vous sûr de vouloir suprimer la catégorie : ${currentCategory.name} ?`"
+        icon="i-heroicons-exclamation-circle" :ui="{
+        icon: { base: 'text-red-500 dark:text-red-400' } as any,
+        footer: { base: 'ml-16' } as any
+      }">
+        <template #footer>
+          <UButton color="red" label="Supprimer" :loading="loading" @click="onDelete" />
+          <UButton color="white" label="Annuler" @click="deleteModalOpen = false" />
+        </template>
+      </UDashboardModal>
+
+      <UDashboardToolbar>
+        <!-- <template #left>
+          <USelectMenu v-model="selectedStatuses" icon="i-heroicons-cog-8-tooth" placeholder="Groupe" multiple
+            :options="defaultStatuses" :ui-menu="{ option: { base: 'capitalize' } }" />
+          <USelectMenu v-model="selectedLocations" icon="i-heroicons-table-cells-20-solid" placeholder="Tableau"
+            :options="defaultLocations" multiple />
+        </template> -->
+        <template #right>
+          <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid"
+            :options="defaultColumns" multiple>
+            <template #label>
+              Affichage
+            </template>
+          </USelectMenu>
+        </template>
+      </UDashboardToolbar>
+      <UTable :columns="columns" :rows="categories" :loading="pending">
+        <template #actions-data="{ row }">
+          <UDropdown :items="items(row)">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
+        </template>
+      </UTable>
+    </UDashboardPanel>
+  </UDashboardPage>
+</template>
+
+<script setup lang="ts">
+import { type Category } from '~/server/utils/drizzle'
+const router = useRouter();
+const route = useRoute();
+const { user } = useUserSession();
+
+const q = ref('')
+useSeoMeta({
+  title: 'Dashboard',
+})
+// Table columns
+const defaultColumns = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Nom' },
+  { key: 'icon', label: 'Icône' },
+  { key: 'color', label: 'Couleur' },
+  { key: 'createdAt', label: 'Date de création' },
+  { key: 'updatedAt', label: 'Date de modification' },
+  { key: 'actions', label: 'Actions' }
+]
+
+const selectedColumns = ref(defaultColumns)
+const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
+// Tables actions row
 const items = (row: Category) => {
-  console.log('row is ', row);
   let items = [
     [{
       label: 'Editer',
       icon: 'i-heroicons-pencil-square-20-solid',
       click: () => {
-        currentGroup.value = row
+        currentCategory.value = row
         updateModalOpen.value = true;
       }
     }],
@@ -34,121 +109,58 @@ const items = (row: Category) => {
         label: 'Supprimer',
         icon: 'i-heroicons-trash-20-solid',
         click: () => {
-          currentGroup.value = row;
+          currentCategory.value = row;
           deleteModalOpen.value = true;
         }
       }])
   }
   return items
 }
-const q = ref('')
-const selected = ref<User[]>([])
-const selectedColumns = ref(defaultColumns)
-const selectedStatuses = ref([])
-const selectedLocations = ref([])
-const sort = ref({ column: 'id', direction: 'asc' as const })
-const input = ref<{ input: HTMLInputElement }>()
-const isNewUserModalOpen = ref(false)
+// Table data
+const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories?group=${route.query.group}`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
+function onFormClose() {
+  createModalOpen.value = false
+  updateModalOpen.value = false
+  deleteModalOpen.value = false
+  currentCategory.value = null;
+  loading.value = false;
+  refresh()
+}
+const createModalOpen = ref(false)
+const updateModalOpen = ref(false)
+const currentCategory = ref<Category | null>(null)
+const deleteModalOpen = ref(false)
+const loading = ref(false)
+const toast = useToast()
 
-const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
-
-const query = computed(() => ({ q: q.value, statuses: selectedStatuses.value, locations: selectedLocations.value, sort: sort.value.column, order: sort.value.direction }))
-
-const { data: users, pending } = await useFetch<User[]>('/api/users', { query, default: () => [] })
-
-const defaultLocations = users.value.reduce((acc, user) => {
-  if (!acc.includes(user.location)) {
-    acc.push(user.location)
+async function onDelete() {
+  loading.value = true
+  try {
+    await $fetch(`/api/categories/${currentCategory.value.id}`, {
+      method: 'DELETE'
+    })
+    toast.add({
+      icon: 'i-heroicons-check-circle',
+      title: `La catégorie "${currentCategory.value.name}" a bien été supprimé.`,
+      color: 'green',
+    })
+    onFormClose()
   }
-  return acc
-}, [] as string[])
-
-const defaultStatuses = users.value.reduce((acc, user) => {
-  if (!acc.includes(user.status)) {
-    acc.push(user.status)
-  }
-  return acc
-}, [] as string[])
-
-function onSelect(row: User) {
-  const index = selected.value.findIndex(item => item.id === row.id)
-  if (index === -1) {
-    selected.value.push(row)
-  } else {
-    selected.value.splice(index, 1)
+  catch (e) {
+    if (e instanceof Error) {
+      console.error(e)
+      toast.add({
+        icon: 'i-heroicons-exclamation-circle',
+        title: 'Veuillez réessayer',
+        description: e.message,
+        color: 'red',
+      })
+      loading.value = false;
+    }
   }
 }
-
-defineShortcuts({
-  '/': () => {
-    input.value?.input?.focus()
-  }
-})
 </script>
-
-<template>
-  <UDashboardPage>
-    <UDashboardPanel grow>
-      <UDashboardNavbar title="Tags" :badge="users.length">
-        <template #right>
-          <UInput ref="input" v-model="q" icon="i-heroicons-funnel" autocomplete="off"
-            placeholder="Filtrer les catégories…" class="hidden lg:block" @keydown.esc="$event.target.blur()">
-            <template #trailing>
-              <UKbd value="/" />
-            </template>
-          </UInput>
-
-          <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray"
-            @click="isNewUserModalOpen = true" />
-        </template>
-      </UDashboardNavbar>
-
-      <UDashboardToolbar>
-        <template #left>
-          <USelectMenu v-model="selectedStatuses" icon="i-heroicons-cog-8-tooth" placeholder="Groupe" multiple
-            :options="defaultStatuses" :ui-menu="{ option: { base: 'capitalize' } }" />
-          <USelectMenu v-model="selectedLocations" icon="i-heroicons-table-cells-20-solid" placeholder="Tableau"
-            :options="defaultLocations" multiple />
-        </template>
-
-        <template #right>
-          <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid"
-            :options="defaultColumns" multiple class="hidden lg:block">
-            <template #label>
-              Affichage
-            </template>
-          </USelectMenu>
-        </template>
-      </UDashboardToolbar>
-
-      <UDashboardModal v-model="isNewUserModalOpen" title="Nouvelle catégorie"
-        description="Ajouter une nouvelle catégorie au système" :ui="{ width: 'sm:max-w-md' }">
-        <!-- ~/components/users/UsersForm.vue -->
-        <UsersForm @close="isNewUserModalOpen = false" />
-      </UDashboardModal>
-
-      <UTable v-model="selected" v-model:sort="sort" :rows="users" :columns="columns" :loading="pending"
-        sort-mode="manual" class="w-full" :ui="{ divide: 'divide-gray-200 dark:divide-gray-800' }" @select="onSelect">
-        <template #name-data="{ row }">
-          <div class="flex items-center gap-3">
-            <UAvatar v-bind="row.avatar" :alt="row.name" size="xs" />
-
-            <span class="text-gray-900 dark:text-white font-medium">{{ row.name }}</span>
-          </div>
-        </template>
-
-        <template #status-data="{ row }">
-          <UBadge :label="row.status"
-            :color="row.status === 'subscribed' ? 'green' : row.status === 'bounced' ? 'orange' : 'red'"
-            variant="subtle" class="capitalize" />
-        </template>
-        <template #actions-data="{ row }">
-          <UDropdown :items="items(row)">
-            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-          </UDropdown>
-        </template>
-      </UTable>
-
-    </UDashboardPanel>
-  </UDashboardPage>
-</template>
