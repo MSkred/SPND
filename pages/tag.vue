@@ -122,7 +122,9 @@ const items = (row: Tag) => {
   return items
 }
 // Table data
-const { data: tags, refresh, pending } = await useFetch<Tag[]>(`/api/tags?group=${route.query.group}`, {
+const groupId = ref(route.query.group)
+const { data: tags, refresh, pending } = await useFetch<Tag[]>(`/api/tags`, {
+  query: { group : groupId },
   deep: false,
   lazy: true,
   default: () => [],
@@ -168,4 +170,8 @@ async function onDelete() {
     }
   }
 }
+watch(() => route.query.group, () => {
+  groupId.value = route.query.group
+  refresh()
+});
 </script>

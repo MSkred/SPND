@@ -78,9 +78,8 @@
 <script setup lang="ts">
 import { format, setDefaultOptions } from "date-fns";
 import { fr } from "date-fns/locale";
-import { categories } from "~/server/database/schema";
 setDefaultOptions({ locale: fr });
-import { type Category, type Expense } from "~/server/utils/drizzle";
+import { type Category, type Expense, type Tag } from "~/server/utils/drizzle";
 const route = useRoute();
 const q = ref("");
 const createModalOpen = ref(false);
@@ -106,6 +105,7 @@ const columns = computed(() =>
   defaultColumns.filter((column) => selectedColumns.value.includes(column))
 );
 useSeoMeta({ title: "Dépenses" });
+const groupId = ref(route.query.group)
 // Tables actions row
 const items = (row: Expense) => {
   let items = [
@@ -130,21 +130,27 @@ const items = (row: Expense) => {
   return items;
 };
 // FETCH EXPENSES
-const { data: expenses, refresh, pending } = await useFetch<Expense[]>(`/api/expenses?group=${route.query.group}`, { deep: false, lazy: true, default: () => [] });
+const { data: expenses, refresh: refreshExpenses, pending } = await useFetch<Expense[]>(`/api/expenses`, {
+  query: { group: groupId },
+  deep: false, lazy: true, default: () => []
+});
 // FETCH CATEGORIES BY GROUP
-const { data: categories } = await useFetch<Category[]>(`/api/categories?group=${route.query.group}`, {
+const { data: categories, refresh: refreshCategories } = await useFetch<Category[]>(`/api/categories`, {
+  query: { group: groupId },
   deep: false,
   lazy: true,
   default: () => [],
 })
 // FETCH TAGS BY GROUP
-const { data: tags } = await useFetch<Tag[]>(`/api/tags?group=${route.query.group}`, {
+const { data: tags, refresh: refreshTags } = await useFetch<Tag[]>(`/api/tags`, {
+  query: { group: groupId },
   deep: false,
   lazy: true,
   default: () => [],
 })
 // FETCH BOARDS BY GROUP
-const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.query.group}`, {
+const { data: boards, refresh: refreshBoards } = await useFetch<Board[]>(`/api/boards`, {
+  query: { group: groupId },
   deep: false,
   lazy: true,
   default: () => [],
@@ -156,7 +162,7 @@ function onFormClose() {
   deleteModalOpen.value = false;
   currentExpense.value = null;
   loading.value = false;
-  refresh();
+  refreshExpenses();
 }
 async function onDelete() {
   loading.value = true;
@@ -180,4 +186,13 @@ function findAndBeautify(cible: Tag[] | Category[] | Board[], id: number) {
     return '-'
   }
 }
+
+watch(() => route.query.group, () => {
+  groupId.value = route.query.group
+  refreshExpenses()
+  refreshCategories()
+  refreshTags()
+  refreshBoards()
+});
+
 </script>

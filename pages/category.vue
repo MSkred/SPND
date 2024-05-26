@@ -112,7 +112,9 @@ const items = (row: Category) => {
   return items
 }
 // Table data
-const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories?group=${route.query.group}`, {
+const groupId = ref(route.query.group)
+const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories`, {
+  query: { group: groupId },
   deep: false,
   lazy: true,
   default: () => [],
@@ -158,4 +160,8 @@ async function onDelete() {
     }
   }
 }
+watch(() => route.query.group, () => {
+  groupId.value = route.query.group
+  refresh()
+});
 </script>

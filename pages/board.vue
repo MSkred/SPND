@@ -190,11 +190,13 @@ const items = (row: Board) => {
   return items;
 };
 // Table data
+const groupId = ref(route.query.group)
 const {
   data: boards,
   refresh,
   pending,
-} = await useFetch<Board[]>(`/api/boards?group=${route.query.group}`, {
+} = await useFetch<Board[]>(`/api/boards`, {
+  query: { group: groupId },
   deep: false,
   lazy: true,
   default: () => [],
@@ -239,4 +241,8 @@ async function onDelete() {
     }
   }
 }
+watch(() => route.query.group, () => {
+  groupId.value = route.query.group
+  refresh()
+});
 </script>
