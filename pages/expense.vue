@@ -96,8 +96,6 @@ const defaultColumns = [
   { key: "boardId", label: "Tableau" },
   { key: "categoryId", label: "Catégorie" },
   { key: "tagId", label: "Tag" },
-  { key: "createdAt", label: "Date de création" },
-  { key: "updatedAt", label: "Date de modification" },
   { key: "actions", label: "Actions" },
 ];
 const selectedColumns = ref(defaultColumns);

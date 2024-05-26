@@ -87,8 +87,6 @@ const defaultColumns = [
   { key: "objective", label: "Objectif" },
   { key: "startDate", label: "Date de début" },
   { key: "endDate", label: "Date de fin" },
-  { key: "createdAt", label: "Date de création" },
-  { key: "updatedAt", label: "Date de modification" },
   { key: "actions", label: "Actions" },
 ];
 

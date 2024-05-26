@@ -3,13 +3,11 @@
     <UDashboardPanel grow>
       <UDashboardNavbar title="Catégorie" :badge="categories.length">
         <template #right>
-          <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray"
-            @click="createModalOpen = true" />
+          <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray" @click="createModalOpen = true" />
         </template>
       </UDashboardNavbar>
 
-      <UDashboardModal v-model="createModalOpen" title="Nouvelle catégorie"
-        description="Créer une nouvelle catégorie dans votre système" :ui="{ width: 'sm:max-w-md' }">
+      <UDashboardModal v-model="createModalOpen" title="Nouvelle catégorie" description="Créer une nouvelle catégorie dans votre système" :ui="{ width: 'sm:max-w-md' }">
         <CategoryCreateForm @close="onFormClose()" />
       </UDashboardModal>
 
@@ -17,13 +15,7 @@
         <CategoryEditForm v-if="currentCategory" :category="currentCategory" @close="onFormClose()" />
       </UDashboardModal>
 
-      <UDashboardModal v-if="currentCategory" v-model="deleteModalOpen"
-        :title="`Suppression de la catégorie : ${currentCategory.name}`"
-        :description="`Êtes-vous sûr de vouloir suprimer la catégorie : ${currentCategory.name} ?`"
-        icon="i-heroicons-exclamation-circle" :ui="{
-        icon: { base: 'text-red-500 dark:text-red-400' } as any,
-        footer: { base: 'ml-16' } as any
-      }">
+      <UDashboardModal v-if="currentCategory" v-model="deleteModalOpen" :title="`Suppression de la catégorie : ${currentCategory.name}`" :description="`Êtes-vous sûr de vouloir suprimer la catégorie : ${currentCategory.name} ?`" icon="i-heroicons-exclamation-circle" :ui="{ icon: { base: 'text-red-500 dark:text-red-400' } as any, footer: { base: 'ml-16' } as any }">
         <template #footer>
           <UButton color="red" label="Supprimer" :loading="loading" @click="onDelete" />
           <UButton color="white" label="Annuler" @click="deleteModalOpen = false" />
@@ -32,23 +24,14 @@
 
       <UDashboardToolbar>
         <template #right>
-          <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid"
-            :options="defaultColumns" multiple>
-            <template #label>
-              Affichage
-            </template>
+          <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid" :options="defaultColumns" multiple>
+            <template #label> Affichage </template>
           </USelectMenu>
         </template>
       </UDashboardToolbar>
       <UTable :columns="columns" :rows="categories" :loading="pending">
-        <template #icon-data="{ row }">
-          <span>{{ row.icon ? row.icon : '-' }}</span>
-        </template>
-        <template #color-data="{ row }">
-          <div v-if="row.color" class="h-3 w-3 rounded" :style="{ 'background-color': row.color }"></div>
-          <template v-else>
-            -
-          </template>
+        <template #name-data="{ row }">
+          <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
         </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
@@ -62,19 +45,13 @@
 
 <script setup lang="ts">
 import { type Category } from '~/server/utils/drizzle'
-const router = useRouter();
 const route = useRoute();
-const { user } = useUserSession();
-
 useSeoMeta({
   title: 'Dashboard',
 })
 // Table columns
 const defaultColumns = [
-  { key: 'id', label: 'ID' },
   { key: 'name', label: 'Nom' },
-  { key: 'icon', label: 'Icône' },
-  { key: 'color', label: 'Couleur' },
   { key: 'createdAt', label: 'Date de création' },
   { key: 'updatedAt', label: 'Date de modification' },
   { key: 'actions', label: 'Actions' }
@@ -113,12 +90,7 @@ const items = (row: Category) => {
 }
 // Table data
 const groupId = ref(route.query.group)
-const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories`, {
-  query: { group: groupId },
-  deep: false,
-  lazy: true,
-  default: () => [],
-})
+const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories`, { query: { group: groupId }, deep: false, lazy: true, default: () => [],})
 function onFormClose() {
   createModalOpen.value = false
   updateModalOpen.value = false
@@ -137,25 +109,14 @@ const toast = useToast()
 async function onDelete() {
   loading.value = true
   try {
-    await $fetch(`/api/categories/${currentCategory.value.id}`, {
-      method: 'DELETE'
-    })
-    toast.add({
-      icon: 'i-heroicons-check-circle',
-      title: `La catégorie "${currentCategory.value.name}" a bien été supprimé.`,
-      color: 'green',
-    })
+    await $fetch(`/api/categories/${currentCategory.value.id}`, { method: 'DELETE' })
+    toast.add({ icon: 'i-heroicons-check-circle', title: `La catégorie "${currentCategory.value.name}" a bien été supprimé.`, color: 'green' })
     onFormClose()
   }
   catch (e) {
     if (e instanceof Error) {
       console.error(e)
-      toast.add({
-        icon: 'i-heroicons-exclamation-circle',
-        title: 'Veuillez réessayer',
-        description: e.message,
-        color: 'red',
-      })
+      toast.add({ icon: 'i-heroicons-exclamation-circle', title: 'Veuillez réessayer', description: e.message, color: 'red' })
       loading.value = false;
     }
   }
