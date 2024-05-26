@@ -3,8 +3,7 @@
     <UDashboardPanel grow>
       <UDashboardNavbar title="Tags" :badge="tags.length">
         <template #right>
-          <UInput ref="input" v-model="q" icon="i-heroicons-funnel" autocomplete="off" placeholder="Filtrer les tags"
-            class="hidden lg:block" @keydown.esc="$event.target.blur()">
+          <UInput ref="input" v-model="q" icon="i-heroicons-funnel" autocomplete="off" placeholder="Filtrer les tags" class="hidden lg:block" @keydown.esc="$event.target.blur()">
             <template #trailing>
               <UKbd value="/" />
             </template>
@@ -14,8 +13,7 @@
         </template>
       </UDashboardNavbar>
 
-      <UDashboardModal v-model="createModalOpen" title="Nouveau tag"
-        description="Créer une nouveau tag dans votre système" :ui="{ width: 'sm:max-w-md' }">
+      <UDashboardModal v-model="createModalOpen" title="Nouveau tag" description="Créer une nouveau tag dans votre système" :ui="{ width: 'sm:max-w-md' }">
         <TagCreateForm @close="onFormClose()" />
       </UDashboardModal>
 
@@ -23,12 +21,7 @@
         <TagEditForm v-if="currentTag" :tag="currentTag" @close="onFormClose()" />
       </UDashboardModal>
 
-      <UDashboardModal v-if="currentTag" v-model="deleteModalOpen" :title="`Suppression du tag : ${currentTag.name}`"
-        :description="`Êtes-vous sûr de vouloir suprimer le tag : ${currentTag.name} ?`"
-        icon="i-heroicons-exclamation-circle" :ui="{
-        icon: { base: 'text-red-500 dark:text-red-400' } as any,
-        footer: { base: 'ml-16' } as any
-      }">
+      <UDashboardModal v-if="currentTag" v-model="deleteModalOpen" :title="`Suppression du tag : ${currentTag.name}`" :description="`Êtes-vous sûr de vouloir suprimer le tag : ${currentTag.name} ?`" icon="i-heroicons-exclamation-circle" :ui="{ icon: { base: 'text-red-500 dark:text-red-400' } as any, footer: { base: 'ml-16' } as any }">
         <template #footer>
           <UButton color="red" label="Supprimer" :loading="loading" @click="onDelete" />
           <UButton color="white" label="Annuler" @click="deleteModalOpen = false" />
@@ -43,23 +36,20 @@
             :options="defaultLocations" multiple />
         </template> -->
         <template #right>
-          <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid"
-            :options="defaultColumns" multiple>
-            <template #label>
-              Affichage
-            </template>
+          <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid" :options="defaultColumns" multiple>
+            <template #label> Affichage </template>
           </USelectMenu>
         </template>
       </UDashboardToolbar>
       <UTable :columns="columns" :rows="tags" :loading="pending">
-        <template #icon-data="{ row }">
-          <span>{{ row.icon ? row.icon : '-' }}</span>
+        <template #name-data="{ row }">
+          <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
         </template>
-        <template #color-data="{ row }">
-          <div v-if="row.color" class="h-3 w-3 rounded" :style="{ 'background-color': row.color }"></div>
-          <template v-else>
-              -
-          </template>
+        <template #createdAt-data="{ row }">
+          <span>{{ format(row.createdAt, 'dd/MM/yy, hh:mm')}}</span>
+        </template>
+        <template #updatedAt-data="{ row }">
+          <span>{{ format(row.updatedAt, 'dd/MM/yy, hh:mm')}}</span>
         </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
@@ -72,8 +62,10 @@
 </template>
 
 <script setup lang="ts">
+import { format, setDefaultOptions } from "date-fns";
+import { fr } from "date-fns/locale";
+setDefaultOptions({ locale: fr });
 import { type Tag } from "~/server/utils/drizzle";
-
 const route = useRoute();
 const q = ref('')
 useSeoMeta({
@@ -81,10 +73,7 @@ useSeoMeta({
 })
 // Table columns
 const defaultColumns = [
-  { key: 'id', label: 'ID' },
   { key: 'name', label: 'Nom' },
-  { key: 'icon', label: 'Icône' },
-  { key: 'color', label: 'Couleur' },
   { key: 'createdAt', label: 'Date de création' },
   { key: 'updatedAt', label: 'Date de modification' },
   { key: 'actions', label: 'Actions' }
@@ -123,12 +112,7 @@ const items = (row: Tag) => {
 }
 // Table data
 const groupId = ref(route.query.group)
-const { data: tags, refresh, pending } = await useFetch<Tag[]>(`/api/tags`, {
-  query: { group : groupId },
-  deep: false,
-  lazy: true,
-  default: () => [],
-})
+const { data: tags, refresh, pending } = await useFetch<Tag[]>(`/api/tags`, { query: { group : groupId }, deep: false, lazy: true, default: () => [] })
 function onFormClose() {
   createModalOpen.value = false
   updateModalOpen.value = false
@@ -147,25 +131,14 @@ const toast = useToast()
 async function onDelete() {
   loading.value = true
   try {
-    await $fetch(`/api/tags/${currentTag.value.id}`, {
-      method: 'DELETE'
-    })
-    toast.add({
-      icon: 'i-heroicons-check-circle',
-      title: `Le tag "${currentTag.value.name}" a bien été supprimé.`,
-      color: 'green',
-    })
+    await $fetch(`/api/tags/${currentTag.value.id}`, { method: 'DELETE' })
+    toast.add({ icon: 'i-heroicons-check-circle', title: `Le tag "${currentTag.value.name}" a bien été supprimé.`, color: 'green' })
     onFormClose()
   }
   catch (e) {
     if (e instanceof Error) {
       console.error(e)
-      toast.add({
-        icon: 'i-heroicons-exclamation-circle',
-        title: 'Veuillez réessayer',
-        description: e.message,
-        color: 'red',
-      })
+      toast.add({ icon: 'i-heroicons-exclamation-circle', title: 'Veuillez réessayer', description: e.message, color: 'red' })
       loading.value = false;
     }
   }

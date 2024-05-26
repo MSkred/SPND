@@ -33,6 +33,12 @@
         <template #name-data="{ row }">
           <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
         </template>
+        <template #createdAt-data="{ row }">
+          <span>{{ format(row.createdAt, 'dd/MM/yy, hh:mm')}}</span>
+        </template>
+        <template #updatedAt-data="{ row }">
+          <span>{{ format(row.updatedAt, 'dd/MM/yy, hh:mm')}}</span>
+        </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
             <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
@@ -44,6 +50,9 @@
 </template>
 
 <script setup lang="ts">
+import { format, setDefaultOptions } from "date-fns";
+import { fr } from "date-fns/locale";
+setDefaultOptions({ locale: fr });
 import { type Category } from '~/server/utils/drizzle'
 const route = useRoute();
 useSeoMeta({
