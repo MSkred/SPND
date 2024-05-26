@@ -1,0 +1,161 @@
+<script lang="ts" setup>
+import { object, string, number, boolean, type output } from "zod";
+import type { FormSubmitEvent } from "#ui/types";
+import { type Board } from "~/server/utils/drizzle";
+const toast = useToast();
+import RegExp from "~/utils/regexp";
+const props = defineProps<{
+  board: Board;
+}>();
+
+const emits = defineEmits<{
+  close: [];
+}>();
+
+const schema = object({
+  name: string({ message: "Obligatoire" }).min(2, {
+    message: "Le nom doit faire minimum 2 caractères",
+  }),
+  icon: string()
+    .regex(RegExp().EmojiValidation, { message: "Doit être un emoji" })
+    .nullish(),
+  color: string().nullish(),
+  currencyIsoCode: string(),
+  income: number().positive().nullish(),
+  objective: number().positive(),
+  startDate: string(),
+  endDate: string().nullish(),
+  today: boolean().default(false),
+});
+
+type Schema = output<typeof schema>;
+import { format, setDefaultOptions } from "date-fns";
+import { fr } from "date-fns/locale";
+setDefaultOptions({ locale: fr });
+
+const state = reactive({
+  name: props.board.name,
+  color: props.board.color,
+  icon: props.board.icon,
+  currencyIsoCode: props.board.currencyIsoCode,
+  income: props.board.income,
+  objective: props.board.objective,
+  startDate: props.board.startDate,
+  endDate: props.board.endDate,
+  today: props.board.today,
+});
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  try {
+    await $fetch(`/api/boards/${props.board.id}`, {
+      method: "PUT",
+      body: event.data,
+    });
+    toast.add({
+      icon: "i-heroicons-check-circle",
+      title: `Le tableau "${event.data.name}" a bien été modifié.`,
+      color: "green",
+    });
+    emits("close");
+  } catch (e) {
+    if (e instanceof Error) {
+      console.error(e);
+      toast.add({
+        icon: "i-heroicons-exclamation-circle",
+        title: "Veuillez réessayer",
+        description: e.message,
+        color: "red",
+      });
+    }
+  }
+}
+const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+});
+</script>
+
+<template>
+  <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+    <UFormGroup label="Nom du tableau" name="name" required>
+      <UInput
+        placeholder="ex: Japon, Janvier 24, Février 24, …"
+        v-model="state.name"
+      />
+    </UFormGroup>
+    <UFormGroup label="Icône du tableau" name="icon">
+      <UInput placeholder="ex: 🇯🇵, 🥳, 🤡, …" v-model="state.icon" />
+    </UFormGroup>
+    <UFormGroup label="Couleur" name="color">
+      <UInput
+        type="color"
+        icon="i-heroicons-paint-brush-20-solid"
+        v-model="state.color"
+      />
+    </UFormGroup>
+    <UFormGroup label="Devise" name="currency_iso_code" required>
+      <USelectMenu
+        v-model="state.currencyIsoCode"
+        searchable-placeholder="Sélection de la devise"
+        :options="currencies"
+        placeholder="Choix de la devise…"
+        searchable
+        value-attribute="isoCode"
+        option-attribute="isoCode"
+        :search-attributes="['isoCode', 'symbol', 'name']"
+      />
+    </UFormGroup>
+    <UFormGroup label="Entrée" name="income">
+      <UInput type="number" placeholder="ex: 1800" v-model="state.income">
+        <template #trailing>
+          <span class="text-gray-500 dark:text-gray-400 text-xs">€</span>
+        </template>
+      </UInput>
+    </UFormGroup>
+    <UFormGroup label="Objectif" name="objective" required>
+      <UInput type="number" placeholder="ex: 50" v-model="state.objective">
+        <template #trailing>
+          <span class="text-gray-500 dark:text-gray-400 text-xs">€</span>
+        </template>
+      </UInput>
+    </UFormGroup>
+    <UFormGroup label="Date de début" name="startDate" required>
+      <UPopover :popper="{ placement: 'bottom-start' }">
+        <UButton
+          icon="i-heroicons-calendar-days-20-solid"
+          :label="
+            state.startDate
+              ? format(new Date(state.startDate), 'd MMM, yyy')
+              : 'Choisissez une date de début'
+          "
+        />
+        <template #panel="{ close }">
+          <DatePicker v-model="state.startDate" is-required @close="close" />
+        </template>
+      </UPopover>
+    </UFormGroup>
+    <UFormGroup
+      label="Date de fin"
+      name="endDate"
+      help="Ce champ n'est pas obligatoire. Si vous ne rentrez aucune valeur le système ce basera sur la date du jour."
+    >
+      <UPopover :popper="{ placement: 'bottom-start' }">
+        <UButton
+          icon="i-heroicons-calendar-days-20-solid"
+          :label="
+            state.endDate
+              ? format(new Date(state.endDate), 'd MMM, yyy')
+              : 'Choisissez une date de fin'
+          "
+        />
+        <template #panel="{ close }">
+          <DatePicker v-model="state.endDate" is-required @close="close" />
+        </template>
+      </UPopover>
+    </UFormGroup>
+    <div class="flex flex-row justify-end">
+      <UButton type="submit"> Modifier </UButton>
+    </div>
+  </UForm>
+</template>

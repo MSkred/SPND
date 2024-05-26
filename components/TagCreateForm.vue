@@ -76,4 +76,3 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     </div>
   </UForm>
 </template>
-~/utils/regexp/regexp~/utils/regexp~/utils/regexp/emoji

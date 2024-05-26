@@ -20,10 +20,12 @@
     "@nuxthub/core": "^0.5.17",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/i18n": "^8.3.1",
+    "date-fns": "^3.6.0",
     "drizzle-orm": "^0.30.10",
     "nuxt": "^3.11.2",
     "nuxt-auth-utils": "^0.0.25",
     "nuxt-gtag": "^2.0.6",
+    "v-calendar": "^3.1.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
