@@ -1,32 +1,29 @@
 import { object, string, number, boolean, date } from 'zod'
-import RegExp from "~/utils/regexp";
 
 export default defineEventHandler(async (event) => {
   // Verify body key types
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
-    icon: string().regex(RegExp().EmojiValidation, { message: 'Doit être un emoji' }).nullish(),
-    color: string().nullish(),
-    currencyIsoCode: string(),
-    income: number().positive().nullish(),
-    objective: number().positive(),
+    price: number().positive(),
     startDate: string(),
     endDate: string().nullish(),
-    today: boolean().default(false),
+    currencyIsoCode: string(),
+    category_id: number({ coerce: true }),
+    board_id: number({ coerce: true }),
+    tag_id: number({ coerce: true }).nullish(),
     group_id: number({ coerce: true })
   }).parse)
 
   // Create category with data from body
-  await useDrizzle().insert(tables.boards).values({
+  await useDrizzle().insert(tables.expenses).values({
     name: body.name,
-    icon: body.icon,
-    color: body.color,
-    currencyIsoCode: body.currencyIsoCode,
-    income: body.income,
-    objective: body.objective,
+    price: body.price,
     startDate: body.startDate,
     endDate: body.endDate,
-    today: body.today,
+    currencyIsoCode: body.currencyIsoCode,
+    categoryId: body.category_id,
+    tagId: body.tag_id,
+    boardId: body.board_id,
     groupId: body.group_id,
   }).execute()
 
