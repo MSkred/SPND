@@ -41,12 +41,29 @@
             <UButton label="Créer une dépense" trailing-icon="i-heroicons-plus" @click="createModalOpen = true"/>
           </div>
         </template>
-        <template #icon-data="{ row }">
-          <span>{{ row.icon ? row.icon : "-" }}</span>
+        <template #price-data="{ row }">
+          <span>{{ row.price + ' ' + row.currencyIsoCode}}</span>
         </template>
-        <template #color-data="{ row }">
-          <div v-if="row.color" class="h-3 w-3 rounded" :style="{ 'background-color': row.color }"></div>
-          <template v-else> - </template>
+        <template #boardId-data="{ row }">
+          <span>{{ findAndBeautify(boards, row.boardId) }}</span>
+        </template>
+        <template #categoryId-data="{ row }">
+          <span>{{ findAndBeautify(categories, row.categoryId) }}</span>
+        </template>
+        <template #tagId-data="{ row }">
+          <span>{{ findAndBeautify(tags, row.tagId) }}</span>
+        </template>
+        <template #startDate-data="{ row }">
+          <span>{{ format(row.startDate, 'd MMM, yyy')}}</span>
+        </template>
+        <template #endDate-data="{ row }">
+          <span>{{ row.endDate ? format(row.endDate, 'd MMM, yyy') : '-'}}</span>
+        </template>
+        <template #createdAt-data="{ row }">
+          <span>{{ format(row.createdAt, 'dd/MM/yy, hh:mm')}}</span>
+        </template>
+        <template #updatedAt-data="{ row }">
+          <span>{{ format(row.updatedAt, 'dd/MM/yy, hh:mm')}}</span>
         </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
@@ -59,7 +76,11 @@
 </template>
 
 <script setup lang="ts">
-import { type Expense } from "~/server/utils/drizzle";
+import { format, setDefaultOptions } from "date-fns";
+import { fr } from "date-fns/locale";
+import { categories } from "~/server/database/schema";
+setDefaultOptions({ locale: fr });
+import { type Category, type Expense } from "~/server/utils/drizzle";
 const route = useRoute();
 const q = ref("");
 const createModalOpen = ref(false);
@@ -110,6 +131,24 @@ const items = (row: Expense) => {
 };
 // FETCH EXPENSES
 const { data: expenses, refresh, pending } = await useFetch<Expense[]>(`/api/expenses?group=${route.query.group}`, { deep: false, lazy: true, default: () => [] });
+// FETCH CATEGORIES BY GROUP
+const { data: categories } = await useFetch<Category[]>(`/api/categories?group=${route.query.group}`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
+// FETCH TAGS BY GROUP
+const { data: tags } = await useFetch<Tag[]>(`/api/tags?group=${route.query.group}`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
+// FETCH BOARDS BY GROUP
+const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.query.group}`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
 
 function onFormClose() {
   createModalOpen.value = false;
@@ -131,6 +170,14 @@ async function onDelete() {
       toast.add({ icon: "i-heroicons-exclamation-circle", title: "Veuillez réessayer", description: e.message, color: "red" });
       loading.value = false;
     }
+  }
+}
+function findAndBeautify(cible: Tag[] | Category[] | Board[], id: number) {
+  let find = cible.find(el => el.id === id)
+  if (find) {
+    return `${ find.icon ? find.icon + ' ' : '' }${find.name}`
+  } else {
+    return '-'
   }
 }
 </script>
