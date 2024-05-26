@@ -26,17 +26,18 @@ import { format, setDefaultOptions } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Board, Category, Currency, Tag } from "~/server/utils/drizzle";
 setDefaultOptions({ locale: fr });
-
+const boardId = ref<number | null>(null)
+const groupId = ref(route.query.group)
 const state = reactive({
   name: undefined,
   price: undefined,
   startDate: undefined,
   endDate: undefined,
-  currencyIsoCode: undefined,
+  currencyIsoCode: null,
   category_id: undefined,
-  board_id: undefined,
+  board_id: boardId,
   tag_id: undefined,
-  group_id: route.query.group,
+  group_id: groupId,
 });
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
@@ -63,7 +64,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   }
 }
 // FETCH CURRENCIES
-const { data: currencies } = await useFetch<Currency[]>(`/api/currencies`, {
+const { data: currencies, refresh: refreshCurrencies } = await useFetch<Currency[]>(`/api/currencies`, {
+  query: { board: boardId, group: groupId},
   deep: false,
   lazy: true,
   default: () => [],
@@ -86,6 +88,12 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
   lazy: true,
   default: () => [],
 })
+watch(() => state.board_id, () => {
+  let find = boards.value.find(el => el.id === boardId.value)
+  if (find) {
+    state.currencyIsoCode = find!.currencyIsoCode;
+  }
+});
 </script>
 
 <template>
@@ -95,6 +103,22 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
         placeholder="ex: 7-eleven, Supermarché, Tuktuk vers aéroport, …"
         v-model="state.name"
       />
+    </UFormGroup>
+    <UFormGroup label="Tableau" name="board_id" required>
+      <USelectMenu
+        v-model="boardId"
+        searchable-placeholder="Sélection du tableau"
+        :options="boards"
+        placeholder="Choix du tableau"
+        value-attribute="id"
+        searchable>
+        <template #label>
+          <span v-if="boardId">{{ boards.find(el => el.id === boardId).icon ? boards.find(el => el.id === boardId).icon + ' ' : '' }}{{ boards.find(el => el.id === boardId).name }}</span>
+        </template>
+        <template #option="{ option: category }">
+          <span>{{ category.icon ? category.icon + ' ' : '' }}{{ category.name }}</span>
+        </template>
+      </USelectMenu>
     </UFormGroup>
     <UFormGroup label="Devise" name="currencyIsoCode" required>
       <USelectMenu
@@ -113,22 +137,6 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
           <span class="text-gray-500 dark:text-gray-400 text-xs">{{ state.currencyIsoCode }}</span>
         </template>
       </UInput>
-    </UFormGroup>
-    <UFormGroup label="Tableau" name="board_id" required>
-      <USelectMenu
-        v-model="state.board_id"
-        searchable-placeholder="Sélection du tableau"
-        :options="boards"
-        placeholder="Choix du tableau"
-        value-attribute="id"
-        searchable>
-        <template #label>
-          <span v-if="state.board_id">{{ boards.find(el => el.id === state.board_id).icon ? boards.find(el => el.id === state.board_id).icon + ' ' : '' }}{{ boards.find(el => el.id === state.board_id).name }}</span>
-        </template>
-        <template #option="{ option: category }">
-          <span>{{ category.icon ? category.icon + ' ' : '' }}{{ category.name }}</span>
-        </template>
-      </USelectMenu>
     </UFormGroup>
     <UFormGroup label="Catégorie" name="category_id" required>
       <USelectMenu
