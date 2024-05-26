@@ -23,8 +23,7 @@
         <TagEditForm v-if="currentTag" :tag="currentTag" @close="onFormClose()" />
       </UDashboardModal>
 
-      <UDashboardModal v-if="currentTag" v-model="deleteModalOpen"
-        :title="`Suppression du tag : ${currentTag.name}`"
+      <UDashboardModal v-if="currentTag" v-model="deleteModalOpen" :title="`Suppression du tag : ${currentTag.name}`"
         :description="`Êtes-vous sûr de vouloir suprimer le tag : ${currentTag.name} ?`"
         icon="i-heroicons-exclamation-circle" :ui="{
         icon: { base: 'text-red-500 dark:text-red-400' } as any,
@@ -53,6 +52,15 @@
         </template>
       </UDashboardToolbar>
       <UTable :columns="columns" :rows="tags" :loading="pending">
+        <template #icon-data="{ row }">
+          <span>{{ row.icon ? row.icon : '-' }}</span>
+        </template>
+        <template #color-data="{ row }">
+          <div v-if="row.color" class="h-3 w-3 rounded" :style="{ 'background-color': row.color }"></div>
+          <template v-else>
+              -
+          </template>
+        </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
             <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />

@@ -13,8 +13,7 @@
         <CategoryCreateForm @close="onFormClose()" />
       </UDashboardModal>
 
-      <UDashboardModal v-model="updateModalOpen" title="Modification de la catégorie"
-        :ui="{ width: 'sm:max-w-md' }">
+      <UDashboardModal v-model="updateModalOpen" title="Modification de la catégorie" :ui="{ width: 'sm:max-w-md' }">
         <CategoryEditForm v-if="currentCategory" :category="currentCategory" @close="onFormClose()" />
       </UDashboardModal>
 
@@ -42,6 +41,15 @@
         </template>
       </UDashboardToolbar>
       <UTable :columns="columns" :rows="categories" :loading="pending">
+        <template #icon-data="{ row }">
+          <span>{{ row.icon ? row.icon : '-' }}</span>
+        </template>
+        <template #color-data="{ row }">
+          <div v-if="row.color" class="h-3 w-3 rounded" :style="{ 'background-color': row.color }"></div>
+          <template v-else>
+            -
+          </template>
+        </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
             <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
