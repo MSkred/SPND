@@ -171,7 +171,9 @@ const items = (row: Expense) => {
 // FETCH EXPENSES
 const { data: expenses, refresh: refreshExpenses, pending } = await useFetch<Expense[]>(`/api/expenses`, {
   query,
-  deep: false, lazy: true, default: () => []
+  deep: false,
+  lazy: true,
+  default: () => []
 });
 // FETCH CATEGORIES BY GROUP
 const { data: categories, refresh: refreshCategories } = await useFetch<Category[]>(`/api/categories`, {

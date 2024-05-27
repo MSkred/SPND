@@ -6,6 +6,7 @@ const toast = useToast();
 const props = defineProps<{
   expense: Expense;
 }>();
+console.log('props is',  props.expense);
 const emits = defineEmits<{
   close: [];
 }>();
@@ -34,7 +35,7 @@ const state = reactive({
   price: props.expense.price,
   startDate: props.expense.startDate,
   endDate: props.expense.endDate,
-  currency_id: props.expense.currency_id,
+  currency_id: props.expense.currencyId,
   category_id: props.expense.categoryId,
   board_id: props.expense.boardId,
   tag_id: props.expense.tagId,
@@ -88,6 +89,14 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
   lazy: true,
   default: () => [],
 })
+function findAndBeautify(cible: Currency[], id: number) {
+  let find = cible.find(el => el.id === id)
+  if (find) {
+    return `${ find.symbol}`
+  } else {
+    return '-'
+  }
+}
 </script>
 
 <template>
@@ -104,7 +113,7 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
         searchable-placeholder="Sélection de la devise"
         :options="currencies"
         placeholder="Choix de la devise…"
-        value-attribute="isoCode"
+        value-attribute="id"
         searchable
         option-attribute="isoCode"
       />
@@ -112,7 +121,7 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
     <UFormGroup label="Montant" name="price" required>
       <UInput type="number" step="0.01" placeholder="ex: 15.08" v-model="state.price">
         <template #trailing>
-          <span class="text-gray-500 dark:text-gray-400 text-xs">{{ state.currency_id }}</span>
+          <span class="text-gray-500 dark:text-gray-400 text-xs">{{ findAndBeautify(currencies, state.currency_id) }}</span>
         </template>
       </UInput>
     </UFormGroup>

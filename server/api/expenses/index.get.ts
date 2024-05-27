@@ -5,22 +5,12 @@ export default defineEventHandler(async (event) => {
   // Get data from route query
   const { groupId, q, tagIds, categoryIds, boardIds, sort, order } = getQuery(event) as { groupId: number, q?: string, tagIds?: String[], categoryIds?: String[],  boardIds?: String[], sort: 'name' | 'price' | 'startDate', order: 'asc' | 'desc'};
   
-  let expenses;
 
-  // Sort & Order
-  if (order === 'asc') { // Order by ASC
-    expenses = await useDrizzle()
-      .select()
-      .from(tables.expenses)
-      .where(eq(tables.expenses.groupId, groupId))
-      .orderBy(asc(tables.expenses[sort]));
-  } else { // Order by DESC
-    expenses = await useDrizzle()
-      .select()
-      .from(tables.expenses)
-      .where(eq(tables.expenses.groupId, groupId))
-      .orderBy(desc(tables.expenses[sort]));
-  }
+  // SQL request
+  let expenses = await useDrizzle()
+    .select()
+    .from(tables.expenses)
+    .where(eq(tables.expenses.groupId, groupId))
 
   // Filter
   return expenses.filter((expense) => { // Filter on query
@@ -36,5 +26,14 @@ export default defineEventHandler(async (event) => {
   }).filter((expense) => { // Filter on selected boards
     if (!boardIds?.length) return true
     return boardIds.includes(expense.boardId.toString())
+  }).sort((a, b) => {
+    if (!sort) return 0
+
+    const aValue = a[sort]
+    const bValue = b[sort]
+
+    if (aValue < bValue) return order === 'asc' ? -1 : 1
+    if (aValue > bValue) return order === 'asc' ? 1 : -1
+    return 0
   })
 })
