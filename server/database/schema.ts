@@ -53,7 +53,7 @@ export const boards = sqliteTable('boards', {
   name: text('name').notNull(),
   icon: text('icon'),
   color: text('color'),
-  income: integer('income'),
+  income: integer('income').default(0),
   objective: integer('objective').notNull(),
   startDate: text('start_date').notNull(),
   endDate: text('end_date'),

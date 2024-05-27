@@ -21,8 +21,8 @@ const schema = object({
     .nullish(),
   color: string().nullish(),
   currency_id: number(),
-  income: number().positive().nullish(),
-  objective: number().positive(),
+  income: number().nonnegative().nullish(),
+  objective: number().nonnegative(),
   start_date: string(),
   end_date: string().nullish(),
 });

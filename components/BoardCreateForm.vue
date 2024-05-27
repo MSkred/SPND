@@ -1,13 +1,5 @@
 <script lang="ts" setup>
-import {
-  object,
-  string,
-  number,
-  boolean,
-  date,
-  coerce,
-  type output,
-} from "zod";
+import { object, string, number, type output } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
 import RegExp from "~/utils/regexp";
 const route = useRoute();
@@ -24,8 +16,8 @@ const schema = object({
   icon: string().regex(RegExp().EmojiValidation, { message: "Doit être un emoji" }).nullish(),
   color: string().nullish(),
   currency_id: number(),
-  income: number().positive().nullish(),
-  objective: number().positive(),
+  income: number().nonnegative().nullish(),
+  objective: number().nonnegative(),
   start_date: string(),
   end_date: string().nullish(),
 });

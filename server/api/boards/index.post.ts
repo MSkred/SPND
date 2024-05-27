@@ -8,8 +8,8 @@ export default defineEventHandler(async (event) => {
     icon: string().regex(RegExp().EmojiValidation, { message: 'Doit être un emoji' }).nullish(),
     color: string().nullish(),
     currency_id: number({ coerce: true }),
-    income: number().positive().nullish(),
-    objective: number().positive(),
+    income: number().nonnegative().nullish(),
+    objective: number().nonnegative(),
     start_date: string(),
     end_date: string().nullish(),
     group_id: number({ coerce: true })

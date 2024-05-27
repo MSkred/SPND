@@ -49,7 +49,10 @@
           <span>{{ findAndBeautify(currencies, row.currencyId) }}</span>
         </template>
         <template #income-data="{ row }">
-          <span>{{ row.income ? row.income : '-'}}</span>
+          <span>{{ row.income }}€</span>
+        </template>
+        <template #objective-data="{ row }">
+          <span>{{ row.objective }}€</span>
         </template>
         <template #startDate-data="{ row }">
           <span>{{ format(row.startDate, 'd MMM, yyy')}}</span>
