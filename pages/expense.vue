@@ -28,13 +28,33 @@
       </UDashboardModal>
 
       <UDashboardToolbar>
+        <template #left>
+          <USelectMenu v-model="selectedCategories" icon="i-heroicons-rectangle-stack-20-solid" placeholder="Catégorie" multiple :options="filterCategories" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
+            <template #label>
+              <span v-if="selectedCategories.length" class="truncate">{{ selectedCategories.length }} sélectionnée{{ selectedCategories.length > 1 ? 's' : '' }}</span>
+              <span v-else>Catégorie</span>
+            </template>
+          </USelectMenu>
+          <USelectMenu v-model="selectedTags" icon="i-heroicons-tag-20-solid" placeholder="Tag" multiple :options="filterTags" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
+            <template #label>
+              <span v-if="selectedTags.length" class="truncate">{{ selectedTags.length }} sélectionné{{ selectedTags.length > 1 ? 's' : '' }}</span>
+              <span v-else>Tag</span>
+            </template>
+          </USelectMenu>
+          <USelectMenu v-model="selectedBoards" icon="i-heroicons-table-cells-20-solid" placeholder="Tableau" multiple :options="filterBoards" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
+            <template #label>
+              <span v-if="selectedBoards.length" class="truncate">{{ selectedBoards.length }} sélectionné{{ selectedBoards.length > 1 ? 's' : '' }}</span>
+              <span v-else>Tableau</span>
+            </template>
+          </USelectMenu>
+        </template>
         <template #right>
           <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid" :options="defaultColumns" multiple>
             <template #label> Affichage </template>
           </USelectMenu>
         </template>
       </UDashboardToolbar>
-      <UTable :columns="columns" :rows="expenses" :loading="pending">
+      <UTable :columns="columns" :rows="expenses" :loading="pending" v-model:sort="sort" sort-mode="manual">
         <template #empty-state>
           <div class="flex flex-col items-center justify-center py-6 gap-3">
             <span class="text-sm">Aucun dépense pour ce groupe</span>
@@ -89,9 +109,9 @@ const deleteModalOpen = ref(false);
 const loading = ref(false);
 const toast = useToast();
 const defaultColumns = [
-  { key: "name", label: "Nom" },
-  { key: "price", label: "Prix" },
-  { key: "startDate", label: "Date" },
+  { key: "name", label: "Nom", sortable: true },
+  { key: "price", label: "Prix", sortable: true },
+  { key: "startDate", label: "Date", sortable: true },
   { key: "endDate", label: "Date de fin" },
   { key: "boardId", label: "Tableau" },
   { key: "categoryId", label: "Catégorie" },
@@ -102,6 +122,27 @@ const selectedColumns = ref(defaultColumns);
 const columns = computed(() =>
   defaultColumns.filter((column) => selectedColumns.value.includes(column))
 );
+const filterCategories = computed(() => {
+  return categories.value.map(el => {
+    return { name: `${el.icon ? el.icon + ' ' : ''}${el.name}`, id: el.id }
+  })
+})
+const selectedCategories = ref([])
+const filterTags = computed(() => {
+  return tags.value.map(el => {
+    return { name: `${el.icon ? el.icon + ' ' : ''}${el.name}`, id: el.id }
+  })
+})
+const selectedTags = ref([])
+const filterBoards = computed(() => {
+  return boards.value.map(el => {
+    return { name: `${el.icon ? el.icon + ' ' : ''}${el.name}`, id: el.id }
+  })
+})
+const selectedBoards = ref([])
+const sort = ref({ column: 'name', direction: 'asc' as const })
+const query = computed(() => ({ q: q.value, groupId: groupId.value, categoryIds: selectedCategories.value, tagIds: selectedTags.value, boardIds: selectedBoards.value, sort: sort.value.column, order: sort.value.direction })) // locations: selectedLocations.value
+
 useSeoMeta({ title: "Dépenses" });
 const groupId = ref(route.query.group)
 // Tables actions row
@@ -129,7 +170,7 @@ const items = (row: Expense) => {
 };
 // FETCH EXPENSES
 const { data: expenses, refresh: refreshExpenses, pending } = await useFetch<Expense[]>(`/api/expenses`, {
-  query: { group: groupId },
+  query,
   deep: false, lazy: true, default: () => []
 });
 // FETCH CATEGORIES BY GROUP

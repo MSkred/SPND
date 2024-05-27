@@ -43,15 +43,6 @@ const links = [ {
       shortcuts: ['G', 'I']
     }
   }, {
-  id: 'users',
-  label: 'Utilisateurs',
-  icon: 'i-heroicons-user-group',
-  to: '/',
-  tooltip: {
-    text: 'Utilisateurs',
-    shortcuts: ['G', 'U']
-  }
-}, {
   id: 'settings',
   label: 'Paramètres',
   to: '/settings',
