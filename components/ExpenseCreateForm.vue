@@ -13,9 +13,9 @@ const schema = object({
     message: "Le nom doit faire minimum 2 caractères",
   }),
   price: number().positive(),
-  startDate: string(),
-  endDate: string().nullish(),
-  currency_id: string(),
+  start_date: string(),
+  end_date: string().nullish(),
+  currency_id: number(),
   category_id: number({ coerce: true }),
   board_id: number({ coerce: true }),
   tag_id: number({ coerce: true }).nullish(),
@@ -24,15 +24,15 @@ const schema = object({
 type Schema = output<typeof schema>;
 import { format, setDefaultOptions } from "date-fns";
 import { fr } from "date-fns/locale";
-import type { Board, Category, Currency, Tag } from "~/server/utils/drizzle";
+import type { Board, Category, Currency, Expense, Tag } from "~/server/utils/drizzle";
 setDefaultOptions({ locale: fr });
 const boardId = ref<number | null>(null)
 const groupId = ref(route.query.group)
 const state = reactive({
   name: undefined,
   price: undefined,
-  startDate: undefined,
-  endDate: undefined,
+  start_date: undefined,
+  end_date: undefined,
   currency_id: null,
   category_id: undefined,
   board_id: boardId,
@@ -91,9 +91,18 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
 watch(() => state.board_id, () => {
   let find = boards.value.find(el => el.id === boardId.value)
   if (find) {
-    state.currency_id = find!.currency_id;
+    state.currency_id = find!.currencyId;
   }
 });
+
+function findAndBeautify(cible: Currency[], id: number) {
+  let find = cible.find(el => el.id === id)
+  if (find) {
+    return `${ find.symbol}`
+  } else {
+    return '-'
+  }
+}
 </script>
 
 <template>
@@ -126,15 +135,15 @@ watch(() => state.board_id, () => {
         searchable-placeholder="Sélection de la devise"
         :options="currencies"
         placeholder="Choix de la devise…"
-        value-attribute="isoCode"
+        value-attribute="id"
         searchable
         option-attribute="isoCode"
       />
     </UFormGroup>
-    <UFormGroup label="Montant" name="price">
+    <UFormGroup label="Montant" name="price" required>
       <UInput type="number" step="0.01" placeholder="ex: 15.08" v-model="state.price">
-        <template #trailing>
-          <span class="text-gray-500 dark:text-gray-400 text-xs">{{ state.currency_id }}</span>
+        <template v-if="state.currency_id" #trailing>
+          <span class="text-gray-500 dark:text-gray-400 text-xs">{{ findAndBeautify(currencies, state.currency_id) }}</span>
         </template>
       </UInput>
     </UFormGroup>
@@ -170,33 +179,33 @@ watch(() => state.board_id, () => {
         </template>
       </USelectMenu>
     </UFormGroup>
-    <UFormGroup label="Date de début" name="startDate" required>
+    <UFormGroup label="Date de début" name="start_date" required>
       <UPopover :popper="{ placement: 'bottom-start' }">
         <UButton
           icon="i-heroicons-calendar-days-20-solid"
           :label="
-            state.startDate
-              ? format(state.startDate, 'd MMM, yyy')
+            state.start_date
+              ? format(state.start_date, 'd MMM, yyy')
               : 'Choisissez la date de la dépense'
           "
         />
         <template #panel="{ close }">
-          <DatePicker v-model="state.startDate" is-required @close="close" />
+          <DatePicker v-model="state.start_date" is-required @close="close" />
         </template>
       </UPopover>
     </UFormGroup>
-    <UFormGroup label="Date de fin" name="endDate" help="Ce champ n'est pas obligatoire. Complétez le uniquement si vous souhaitez étendre la dépense (ex: Abonnement, nuits d'hôtel, etc…)">
+    <UFormGroup label="Date de fin" name="start_date" help="Ce champ n'est pas obligatoire. Complétez le uniquement si vous souhaitez étendre la dépense (ex: Abonnement, nuits d'hôtel, etc…)">
       <UPopover :popper="{ placement: 'bottom-start' }">
         <UButton
           icon="i-heroicons-calendar-days-20-solid"
           :label="
-            state.endDate
-              ? format(state.endDate, 'd MMM, yyy')
+            state.end_date
+              ? format(state.end_date, 'd MMM, yyy')
               : 'Étendre la dépense jusqu\'au'
           "
         />
         <template #panel="{ close }">
-          <DatePicker v-model="state.endDate" is-required @close="close" />
+          <DatePicker v-model="state.end_date" is-required @close="close" />
         </template>
       </UPopover>
     </UFormGroup>

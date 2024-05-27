@@ -1,0 +1,1 @@
+ALTER TABLE `expenses` ADD `convertered_price` integer NOT NULL;

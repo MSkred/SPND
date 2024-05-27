@@ -109,7 +109,7 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
         option-attribute="isoCode"
       />
     </UFormGroup>
-    <UFormGroup label="Montant" name="price">
+    <UFormGroup label="Montant" name="price" required>
       <UInput type="number" step="0.01" placeholder="ex: 15.08" v-model="state.price">
         <template #trailing>
           <span class="text-gray-500 dark:text-gray-400 text-xs">{{ state.currency_id }}</span>

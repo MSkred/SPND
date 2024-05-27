@@ -25,7 +25,7 @@ export const expenses = sqliteTable('expenses', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
   price: integer('price').notNull(),
-  convertedPrice: integer('price').notNull(),
+  convertedPrice: integer('convertered_price').notNull(),
   expenseRate: integer('expense_rate').notNull(),
   startDate: text('start_date').notNull(),
   endDate: text('end_date'),

@@ -62,7 +62,7 @@
           </div>
         </template>
         <template #price-data="{ row }">
-          <span>{{ row.price + ' ' + row.currency_id}}</span>
+          <span>{{ beautifyPrice(currencies, row) }}</span>
         </template>
         <template #boardId-data="{ row }">
           <span>{{ findAndBeautify(boards, row.boardId) }}</span>
@@ -195,6 +195,12 @@ const { data: boards, refresh: refreshBoards } = await useFetch<Board[]>(`/api/b
   default: () => [],
 })
 
+const { data: currencies, refresh: refreshCurrencies } = await useFetch<Currency[]>(`/api/currencies`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+});
+
 function onFormClose() {
   createModalOpen.value = false;
   updateModalOpen.value = false;
@@ -221,6 +227,15 @@ function findAndBeautify(cible: Tag[] | Category[] | Board[], id: number) {
   let find = cible.find(el => el.id === id)
   if (find) {
     return `${ find.icon ? find.icon + ' ' : '' }${find.name}`
+  } else {
+    return '-'
+  }
+}
+
+function beautifyPrice(cible: Currency[], row: Expense) {
+  let find = cible.find(el => el.id === row.currencyId)
+  if (find) {
+    return `${row.price} ${ find.symbol }`
   } else {
     return '-'
   }

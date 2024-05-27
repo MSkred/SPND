@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     
     const g = await useDrizzle().select().from(tables.groups).where(eq(tables.groups.id, group)).get()
     
-    currencies = currencies.filter(el => (el.isoCode === b!.currency_id || el.isoCode === g!.currency_id))
+    currencies = currencies.filter(el => (el.id === b!.currencyId || el.id === g!.currencyId))
     return currencies
   } else {
     return currencies
