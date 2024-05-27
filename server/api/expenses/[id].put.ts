@@ -33,5 +33,5 @@ export default defineEventHandler(async (event) => {
     .where(eq(tables.expenses.id, params.id))
     .execute()
 
-  return sendNoContent(event, 201)
+  return sendNoContent(event, 204)
 })
