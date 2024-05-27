@@ -57,7 +57,6 @@ export const boards = sqliteTable('boards', {
   objective: integer('objective').notNull(),
   startDate: text('start_date').notNull(),
   endDate: text('end_date'),
-  today: integer('today', { mode: 'boolean' }),
   groupId: integer('group_id').notNull().references(() => groups.id),
   currencyId: integer('currency_id').notNull().references(() => currencies.id),
   createdAt: text('created_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`),

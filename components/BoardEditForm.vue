@@ -25,7 +25,6 @@ const schema = object({
   objective: number().positive(),
   start_date: string(),
   end_date: string().nullish(),
-  today: boolean().default(false),
 });
 
 type Schema = output<typeof schema>;
@@ -42,7 +41,6 @@ const state = reactive({
   objective: props.board.objective,
   start_date: props.board.startDate,
   end_date: props.board.endDate,
-  today: props.board.today,
 });
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {

@@ -28,7 +28,6 @@ const schema = object({
   objective: number().positive(),
   start_date: string(),
   end_date: string().nullish(),
-  today: boolean().default(false),
 });
 
 type Schema = output<typeof schema>;
@@ -45,7 +44,6 @@ const state = reactive({
   objective: undefined,
   start_date: undefined,
   end_date: undefined,
-  today: undefined,
   group_id: route.query.group,
 });
 async function onSubmit(event: FormSubmitEvent<Schema>) {

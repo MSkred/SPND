@@ -12,7 +12,6 @@ export default defineEventHandler(async (event) => {
     objective: number().positive(),
     start_date: string(),
     end_date: string().nullish(),
-    today: boolean().default(false),
     group_id: number({ coerce: true })
   }).parse)
 
@@ -26,7 +25,6 @@ export default defineEventHandler(async (event) => {
     objective: body.objective,
     startDate: body.start_date,
     endDate: body.end_date,
-    today: body.today,
     groupId: body.group_id,
   }).execute()
 

@@ -15,6 +15,13 @@
       "when": 1716797397489,
       "tag": "0001_abnormal_fabian_cortez",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1716799628278,
+      "tag": "0002_low_scalphunter",
+      "breakpoints": true
     }
   ]
 }
