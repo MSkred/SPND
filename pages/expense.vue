@@ -61,7 +61,7 @@
             <UButton label="Créer une dépense" trailing-icon="i-heroicons-plus" @click="createModalOpen = true"/>
           </div>
         </template>
-        <template #price-data="{ row }">
+        <template #convertedPrice-data="{ row }">
           <span>{{ beautifyPrice(currencies, row) }}</span>
         </template>
         <template #boardId-data="{ row }">
@@ -110,7 +110,7 @@ const loading = ref(false);
 const toast = useToast();
 const defaultColumns = [
   { key: "name", label: "Nom", sortable: true },
-  { key: "price", label: "Prix", sortable: true },
+  { key: "convertedPrice", label: "Prix", sortable: true },
   { key: "startDate", label: "Date", sortable: true },
   { key: "endDate", label: "Date de fin" },
   { key: "boardId", label: "Tableau" },
@@ -196,7 +196,12 @@ const { data: boards, refresh: refreshBoards } = await useFetch<Board[]>(`/api/b
   lazy: true,
   default: () => [],
 })
-
+// FETCH CURRENT GROUP BY ID
+const { data: group, refresh: refreshGroup } = await useFetch<Board[]>(`/api/groups/${groupId.value}`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
 const { data: currencies, refresh: refreshCurrencies } = await useFetch<Currency[]>(`/api/currencies`, {
   deep: false,
   lazy: true,
@@ -235,9 +240,9 @@ function findAndBeautify(cible: Tag[] | Category[] | Board[], id: number) {
 }
 
 function beautifyPrice(cible: Currency[], row: Expense) {
-  let find = cible.find(el => el.id === row.currencyId)
+  let find = cible.find(el => el.id === group.value.currencyId)
   if (find) {
-    return `${row.price} ${ find.symbol }`
+    return `${row.convertedPrice} ${ find.symbol }`
   } else {
     return '-'
   }
@@ -249,6 +254,6 @@ watch(() => route.query.group, () => {
   refreshCategories()
   refreshTags()
   refreshBoards()
+  refreshGroup()
 });
-
 </script>
