@@ -20,11 +20,11 @@ const schema = object({
     .regex(RegExp().EmojiValidation, { message: "Doit être un emoji" })
     .nullish(),
   color: string().nullish(),
-  currencyIsoCode: string(),
+  currency_id: number(),
   income: number().positive().nullish(),
   objective: number().positive(),
-  startDate: string(),
-  endDate: string().nullish(),
+  start_date: string(),
+  end_date: string().nullish(),
   today: boolean().default(false),
 });
 
@@ -37,11 +37,11 @@ const state = reactive({
   name: props.board.name,
   color: props.board.color,
   icon: props.board.icon,
-  currencyIsoCode: props.board.currencyIsoCode,
+  currency_id: props.board.currencyId,
   income: props.board.income,
   objective: props.board.objective,
-  startDate: props.board.startDate,
-  endDate: props.board.endDate,
+  start_date: props.board.startDate,
+  end_date: props.board.endDate,
   today: props.board.today,
 });
 
@@ -94,14 +94,14 @@ const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
         v-model="state.color"
       />
     </UFormGroup>
-    <UFormGroup label="Devise" name="currency_iso_code" required>
+    <UFormGroup label="Devise" name="currency_id" required>
       <USelectMenu
-        v-model="state.currencyIsoCode"
+        v-model="state.currency_id"
         searchable-placeholder="Sélection de la devise"
         :options="currencies"
         placeholder="Choix de la devise…"
         searchable
-        value-attribute="isoCode"
+        value-attribute="id"
         option-attribute="isoCode"
         :search-attributes="['isoCode', 'symbol', 'name']"
       />
@@ -120,37 +120,37 @@ const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
         </template>
       </UInput>
     </UFormGroup>
-    <UFormGroup label="Date de début" name="startDate" required>
+    <UFormGroup label="Date de début" name="start_date" required>
       <UPopover :popper="{ placement: 'bottom-start' }">
         <UButton
           icon="i-heroicons-calendar-days-20-solid"
           :label="
-            state.startDate
-              ? format(new Date(state.startDate), 'd MMM, yyy')
+            state.start_date
+              ? format(new Date(state.start_date), 'd MMM, yyy')
               : 'Choisissez une date de début'
           "
         />
         <template #panel="{ close }">
-          <DatePicker v-model="state.startDate" is-required @close="close" />
+          <DatePicker v-model="state.start_date" is-required @close="close" />
         </template>
       </UPopover>
     </UFormGroup>
     <UFormGroup
       label="Date de fin"
-      name="endDate"
+      name="end_date"
       help="Ce champ n'est pas obligatoire. Si vous ne rentrez aucune valeur le système ce basera sur la date du jour."
     >
       <UPopover :popper="{ placement: 'bottom-start' }">
         <UButton
           icon="i-heroicons-calendar-days-20-solid"
           :label="
-            state.endDate
-              ? format(new Date(state.endDate), 'd MMM, yyy')
+            state.end_date
+              ? format(new Date(state.end_date), 'd MMM, yyy')
               : 'Choisissez une date de fin'
           "
         />
         <template #panel="{ close }">
-          <DatePicker v-model="state.endDate" is-required @close="close" />
+          <DatePicker v-model="state.end_date" is-required @close="close" />
         </template>
       </UPopover>
     </UFormGroup>

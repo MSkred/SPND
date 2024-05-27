@@ -15,7 +15,7 @@ const schema = object({
   price: number().positive(),
   startDate: string(),
   endDate: string().nullish(),
-  currencyIsoCode: string(),
+  currency_id: string(),
   category_id: number({ coerce: true }),
   board_id: number({ coerce: true }),
   tag_id: number({ coerce: true }).nullish(),
@@ -33,7 +33,7 @@ const state = reactive({
   price: undefined,
   startDate: undefined,
   endDate: undefined,
-  currencyIsoCode: null,
+  currency_id: null,
   category_id: undefined,
   board_id: boardId,
   tag_id: undefined,
@@ -91,7 +91,7 @@ const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.quer
 watch(() => state.board_id, () => {
   let find = boards.value.find(el => el.id === boardId.value)
   if (find) {
-    state.currencyIsoCode = find!.currencyIsoCode;
+    state.currency_id = find!.currency_id;
   }
 });
 </script>
@@ -120,9 +120,9 @@ watch(() => state.board_id, () => {
         </template>
       </USelectMenu>
     </UFormGroup>
-    <UFormGroup label="Devise" name="currencyIsoCode" required>
+    <UFormGroup label="Devise" name="currency_id" required>
       <USelectMenu
-        v-model="state.currencyIsoCode"
+        v-model="state.currency_id"
         searchable-placeholder="Sélection de la devise"
         :options="currencies"
         placeholder="Choix de la devise…"
@@ -134,7 +134,7 @@ watch(() => state.board_id, () => {
     <UFormGroup label="Montant" name="price">
       <UInput type="number" step="0.01" placeholder="ex: 15.08" v-model="state.price">
         <template #trailing>
-          <span class="text-gray-500 dark:text-gray-400 text-xs">{{ state.currencyIsoCode }}</span>
+          <span class="text-gray-500 dark:text-gray-400 text-xs">{{ state.currency_id }}</span>
         </template>
       </UInput>
     </UFormGroup>

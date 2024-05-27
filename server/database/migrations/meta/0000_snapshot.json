@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e31cd9c3-af3a-4335-9916-4332db0d6409",
+  "id": "a2f889c2-438d-4584-a5ab-3bcd214ceeb1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "boards": {
@@ -49,15 +49,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "startDate": {
-          "name": "startDate",
+        "start_date": {
+          "name": "start_date",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "endDate": {
-          "name": "endDate",
+        "end_date": {
+          "name": "end_date",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -77,9 +77,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "currency_iso_code": {
-          "name": "currency_iso_code",
-          "type": "text",
+        "currency_id": {
+          "name": "currency_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -107,6 +107,19 @@
           "tableTo": "groups",
           "columnsFrom": [
             "group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "boards_currency_id_currencies_id_fk": {
+          "name": "boards_currency_id_currencies_id_fk",
+          "tableFrom": "boards",
+          "tableTo": "currencies",
+          "columnsFrom": [
+            "currency_id"
           ],
           "columnsTo": [
             "id"
@@ -225,7 +238,7 @@
           "name": "rate",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "created_at": {
@@ -280,15 +293,22 @@
           "notNull": true,
           "autoincrement": false
         },
-        "startDate": {
-          "name": "startDate",
+        "expense_rate": {
+          "name": "expense_rate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "start_date": {
+          "name": "start_date",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "endDate": {
-          "name": "endDate",
+        "end_date": {
+          "name": "end_date",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -322,9 +342,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "currency_iso_code": {
-          "name": "currency_iso_code",
-          "type": "text",
+        "currency_id": {
+          "name": "currency_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -397,6 +417,19 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "expenses_currency_id_currencies_id_fk": {
+          "name": "expenses_currency_id_currencies_id_fk",
+          "tableFrom": "expenses",
+          "tableTo": "currencies",
+          "columnsFrom": [
+            "currency_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -427,9 +460,9 @@
           "autoincrement": false,
           "default": false
         },
-        "currency_iso_code": {
-          "name": "currency_iso_code",
-          "type": "text",
+        "currency_id": {
+          "name": "currency_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -450,7 +483,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "groups_currency_id_currencies_id_fk": {
+          "name": "groups_currency_id_currencies_id_fk",
+          "tableFrom": "groups",
+          "tableTo": "currencies",
+          "columnsFrom": [
+            "currency_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },

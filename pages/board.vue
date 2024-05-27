@@ -45,6 +45,9 @@
         <template #name-data="{ row }">
           <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
         </template>
+        <template #currencyId-data="{ row }">
+          <span>{{ findAndBeautify(currencies, row.currencyId) }}</span>
+        </template>
         <template #income-data="{ row }">
           <span>{{ row.income ? row.income : '-'}}</span>
         </template>
@@ -74,7 +77,7 @@
 import { format, setDefaultOptions } from "date-fns";
 import { fr } from "date-fns/locale";
 setDefaultOptions({ locale: fr });
-import { type Board } from "~/server/utils/drizzle";
+import { type Board, type Currency } from "~/server/utils/drizzle";
 
 const route = useRoute();
 const q = ref("");
@@ -82,7 +85,7 @@ useSeoMeta({ title: "Tableaux", });
 // Table columns
 const defaultColumns = [
   { key: "name", label: "Nom" },
-  { key: "currencyIsoCode", label: "Devise" },
+  { key: "currencyId", label: "Devise" },
   { key: "income", label: "Entrée" },
   { key: "objective", label: "Objectif" },
   { key: "startDate", label: "Date de début" },
@@ -125,6 +128,20 @@ const items = (row: Board) => {
   return items;
 };
 // Table data
+
+const { data: currencies } = await useFetch<Currency[]>(`/api/currencies`, {
+  deep: false,
+  lazy: true,
+  default: () => [],
+});
+function findAndBeautify(cible: Currency[], id: Number) {
+  let find = cible.find(el => el.id === id)
+  if (find) {
+    return `${find.isoCode}`
+  } else {
+    return '-'
+  }
+}
 const groupId = ref(route.query.group)
 const { data: boards, refresh, pending } = await useFetch<Board[]>(`/api/boards`, { query: { group: groupId }, deep: false, lazy: true, default: () => [] });
 function onFormClose() {

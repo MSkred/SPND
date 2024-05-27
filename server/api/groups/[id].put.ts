@@ -9,12 +9,12 @@ export default defineEventHandler(async (event) => {
   
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
-    currency_iso_code: string(),
+    currency_id: number(),
   }).parse)
 
   await useDrizzle().update(tables.groups).set({
     name: body.name,
-    currencyIsoCode: body.currency_iso_code
+    currencyId: body.currency_id
   })
     .where(eq(tables.groups.id, params.id))
     .execute()

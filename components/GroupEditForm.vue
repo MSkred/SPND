@@ -14,13 +14,13 @@ const emits = defineEmits<{
 
 const schema = object({
   name: string({ message: 'Obligatoire' }).min(2, { message: "Le nom doit faire minimum 2 caractères" }),
-  currency_iso_code: string({ message: 'Obligatoire' }),
+  currency_id: string({ message: 'Obligatoire' }),
 })
 
 type Schema = output<typeof schema>
 const state = reactive({
   name: props.group.name,
-  currency_iso_code: props.group.currencyIsoCode
+  currency_id: props.group.currency_id
 })
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
@@ -60,8 +60,8 @@ const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
       <UInput placeholder="ex: Ménage, Tour du monde, …" v-model="state.name" />
     </UFormGroup>
     <UFormGroup label="Devise" name="currency_iso_code" required>
-      <USelectMenu v-model="state.currency_iso_code" searchable-placeholder="Sélection de la devise"
-        :options="currencies" placeholder="Choix de la devise…" value-attribute="isoCode" searchable
+      <USelectMenu v-model="state.currency_id" searchable-placeholder="Sélection de la devise"
+        :options="currencies" placeholder="Choix de la devise…" value-attribute="id" searchable
         option-attribute="isoCode" />
     </UFormGroup>
     <div class="flex flex-row justify-end">

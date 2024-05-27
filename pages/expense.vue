@@ -62,7 +62,7 @@
           </div>
         </template>
         <template #price-data="{ row }">
-          <span>{{ row.price + ' ' + row.currencyIsoCode}}</span>
+          <span>{{ row.price + ' ' + row.currency_id}}</span>
         </template>
         <template #boardId-data="{ row }">
           <span>{{ findAndBeautify(boards, row.boardId) }}</span>

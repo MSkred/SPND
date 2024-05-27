@@ -72,7 +72,7 @@ const defaultColumns = [{
   key: 'private',
   label: 'Privé'
 }, {
-  key: 'currencyIsoCode',
+  key: 'currency_id',
   label: 'Devise'
 }, {
   key: 'createdAt',

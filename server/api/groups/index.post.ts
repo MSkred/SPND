@@ -5,14 +5,14 @@ export default defineEventHandler(async (event) => {
   // Verify body key types
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
-    currency_iso_code: string(),
+    currency_id: number(),
     user_id: number()
   }).parse)
 
   // Create group with data from body
   const group = await useDrizzle().insert(tables.groups).values({
     name: body.name,
-    currencyIsoCode: body.currency_iso_code
+    currencyId: body.currency_id
   }).returning().get()
 
   // Check if group is created

@@ -37,36 +37,38 @@ export default oauth.googleEventHandler({
     }
 
     // Check if user already ve associate groups
-    const userGroups = await useDrizzle().select().from(tables.usersToGroups).where(eq(tables.usersToGroups.userId, user!.id)).get()
-    
-    // Get EUR currency
-    const eurCurrency = await useDrizzle().select().from(tables.currencies).where(eq(tables.currencies.isoCode, 'EUR')).get()
-
-    // If user don't ve group
-    // Create his privat group
-    // Link it to user
-    if (!userGroups) {
-      const group = await useDrizzle().insert(tables.groups).values({
-        name: 'Mon compte',
-        private: true,
-        currencyIsoCode: eurCurrency!.isoCode
-      }).returning().get();
-      await useDrizzle().insert(tables.usersToGroups).values({
-        userId: user!.id,
-        groupId: group.id
-      }).returning();
+    if (user) {
+      const userGroups = await useDrizzle().select().from(tables.usersToGroups).where(eq(tables.usersToGroups.userId, user.id)).get()
+      
+      // Get EUR currency
+      const eurCurrency = await useDrizzle().select().from(tables.currencies).where(eq(tables.currencies.isoCode, 'EUR')).get()
+  
+      // If user don't ve group
+      // Create his privat group
+      // Link it to user
+      if (!userGroups) {
+        const group = await useDrizzle().insert(tables.groups).values({
+          name: 'Mon compte',
+          private: true,
+          currencyId: eurCurrency!.id
+        }).returning().get();
+        await useDrizzle().insert(tables.usersToGroups).values({
+          userId: user!.id,
+          groupId: group.id
+        }).returning();
+      }
+      await setUserSession(event, {
+        user: {
+          id: user!.id,
+          firstname: gUser.given_name,
+          lastname: gUser.family_name,
+          email: gUser.email,
+          picture: gUser.picture,
+          locale: gUser.locale,
+        }
+      })
     }
 
-    await setUserSession(event, {
-      user: {
-        id: user!.id,
-        firstname: gUser.given_name,
-        lastname: gUser.family_name,
-        email: gUser.email,
-        picture: gUser.picture,
-        locale: gUser.locale,
-      }
-    })
 
     return sendRedirect(event, `/`)
   },

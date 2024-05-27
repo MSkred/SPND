@@ -12,11 +12,11 @@ export default defineEventHandler(async (event) => {
     name: string().min(2, { message: "Must be 2 or more characters long" }),
     icon: string().regex(RegExp().EmojiValidation, { message: 'Doit être un emoji' }).nullish(),
     color: string().nullish(),
-    currencyIsoCode: string(),
+    currency_id: number(),
     income: number().positive().nullish(),
     objective: number().positive(),
-    startDate: string(),
-    endDate: string().nullish(),
+    start_date: string(),
+    end_date: string().nullish(),
     today: boolean().default(false),
   }).parse)
 
@@ -24,11 +24,11 @@ export default defineEventHandler(async (event) => {
     name: body.name,
     icon: body.icon,
     color: body.color,
-    currencyIsoCode: body.currencyIsoCode,
+    currencyId: body.currency_id,
     income: body.income,
     objective: body.objective,
-    startDate: body.startDate,
-    endDate: body.endDate,
+    startDate: body.start_date,
+    endDate: body.end_date,
     today: body.today,
   })
     .where(eq(tables.boards.id, params.id))
