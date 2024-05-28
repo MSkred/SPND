@@ -52,6 +52,10 @@
           <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid" :options="defaultColumns" multiple>
             <template #label> Affichage </template>
           </USelectMenu>
+
+        <UButton icon="i-heroicons-funnel" color="gray" size="xs" :disabled="q === '' && selectedBoards.length === 0 && selectedCategories.length === 0 && selectedTags.length === 0" @click="resetFilters">
+          Réintialiser
+        </UButton>
         </template>
       </UDashboardToolbar>
 
@@ -150,12 +154,20 @@ const filterBoards = computed(() => {
 })
 const selectedBoards = ref([])
 const sort = ref({ column: 'startDate', direction: 'desc' as const })
+
+const resetFilters = () => {
+  q.value = ''
+  selectedCategories.value = []
+  selectedTags.value = []
+  selectedBoards.value = []
+}
 const query = computed(() => ({ q: q.value, groupId: groupId.value, categoryIds: selectedCategories.value, tagIds: selectedTags.value, boardIds: selectedBoards.value, sort: sort.value.column, order: sort.value.direction })) // locations: selectedLocations.value
 const page = ref(1)
 const pageCount = 10
 const rows = computed(() => {
   return expenses.value.slice((page.value - 1) * pageCount, (page.value) * pageCount)
 })
+
 useSeoMeta({ title: "Dépenses" });
 const groupId = ref(route.query.group)
 // Tables actions row
