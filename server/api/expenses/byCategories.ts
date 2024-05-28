@@ -3,7 +3,7 @@ import { inArray } from 'drizzle-orm'
 export default defineEventHandler(async (event) => {
 
   // Get data from route query
-  let { groupId, tagIds, boardIds, sort, order } = getQuery(event) as { groupId: number, tagIds?: String[], boardIds?: String[], sort: 'name' | 'expensesPrice', order: 'asc' | 'desc'};
+  let { groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { groupId: number, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'name' | 'expensesPrice', order: 'asc' | 'desc'};
 
   if (boardIds?.length) {
     if (typeof boardIds === 'string') {
@@ -20,6 +20,13 @@ export default defineEventHandler(async (event) => {
   } else {
     tagIds = []
   }
+  if (categoryIds?.length) {
+    if (typeof categoryIds === 'string') {
+      categoryIds = [categoryIds]
+    }
+  } else {
+    categoryIds = []
+  }
 
   // SQL request
   let expenses = await useDrizzle()
@@ -35,6 +42,7 @@ export default defineEventHandler(async (event) => {
     .where(and(
       boardIds.length > 0 ? inArray(tables.expenses.boardId, boardIds) : undefined,
       tagIds.length > 0 ? inArray(tables.expenses.tagId, tagIds) : undefined,
+      categoryIds.length > 0 ? inArray(tables.categories.id, categoryIds) : undefined,
     ))
     .innerJoin(tables.groups, eq(tables.groups.id, tables.categories.groupId))
     .innerJoin(tables.currencies, eq(tables.currencies.id, tables.groups.currencyId))

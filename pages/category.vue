@@ -1,7 +1,7 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Catégories" :badge="categories.length">
+      <UDashboardNavbar title="Catégories" :badge="rows.length">
         <template #right>
           <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray" @click="createModalOpen = true" />
         </template>
@@ -24,6 +24,12 @@
 
       <UDashboardToolbar>
         <template #left>
+          <USelectMenu v-model="selectedCategories" icon="i-heroicons-rectangle-stack-20-solid" placeholder="Catégorie" multiple :options="filterCategories" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
+            <template #label>
+              <span v-if="selectedCategories.length" class="truncate">{{ selectedCategories.length }} sélectionnée{{ selectedCategories.length > 1 ? 's' : '' }}</span>
+              <span v-else>Catégorie</span>
+            </template>
+          </USelectMenu>
           <USelectMenu v-model="selectedTags" icon="i-heroicons-tag-20-solid" placeholder="Tag" multiple :options="filterTags" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
             <template #label>
               <span v-if="selectedTags.length" class="truncate">{{ selectedTags.length }} sélectionné{{ selectedTags.length > 1 ? 's' : '' }}</span>
@@ -41,12 +47,12 @@
           <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid" :options="defaultColumns" multiple>
             <template #label> Affichage </template>
           </USelectMenu>
-          <UButton icon="i-heroicons-funnel" color="gray" size="xs" :disabled="selectedBoards.length === 0 && selectedTags.length === 0" @click="resetFilters">
+          <UButton icon="i-heroicons-funnel" color="gray" size="xs" :disabled="selectedBoards.length === 0 && selectedTags.length === 0 && selectedCategories.length === 0" @click="resetFilters">
             Réintialiser
           </UButton>
         </template>
       </UDashboardToolbar>
-        <UTable :columns="columns" :rows="categories" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
+        <UTable :columns="columns" :rows="rows" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
         <template #name-data="{ row }">
           <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
         </template>
@@ -90,13 +96,20 @@ const filterBoards = computed(() => {
   })
 })
 const selectedBoards = ref([])
+const filterCategories = computed(() => {
+  return categories.value.map(el => {
+    return { name: `${el.icon ? el.icon + ' ' : ''}${el.name}`, id: el.id }
+  })
+})
+const selectedCategories = ref([])
 const sort = ref({ column: 'expensesPrice', direction: 'desc' as const })
 
 const resetFilters = () => {
   selectedTags.value = []
   selectedBoards.value = []
+  selectedCategories.value = []
 }
-const query = computed(() => ({ groupId: groupId.value, tagIds: selectedTags.value, boardIds: selectedBoards.value, sort: sort.value.column, order: sort.value.direction }))
+const query = computed(() => ({ groupId: groupId.value, tagIds: selectedTags.value, boardIds: selectedBoards.value, categoryIds: selectedCategories.value, sort: sort.value.column, order: sort.value.direction }))
 const selectedColumns = ref(defaultColumns)
 const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
 // Tables actions row
@@ -118,7 +131,7 @@ const items = (row: Category) => {
   return items
 }
 // Table data
-const { data: categories, refresh: refreshExpensesByCategory, pending } = await useFetch<Category[]>(`/api/expenses/byCategories`, {
+const { data: rows, refresh: refreshExpensesByCategory, pending } = await useFetch<Category[]>(`/api/expenses/byCategories`, {
   query,
   deep: false,
   lazy: true, 
@@ -148,6 +161,13 @@ const { data: tags, refresh: refreshTags } = await useFetch<Tag[]>(`/api/tags`, 
 })
 // FETCH BOARDS BY GROUP
 const { data: boards, refresh: refreshBoards } = await useFetch<Board[]>(`/api/boards`, {
+  query: { group: groupId },
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
+// FETCH CATEGORIES BY GROUP
+const { data: categories, refresh: refreshCategories } = await useFetch<Category[]>(`/api/categories`, {
   query: { group: groupId },
   deep: false,
   lazy: true,
