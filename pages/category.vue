@@ -33,11 +33,8 @@
         <template #name-data="{ row }">
           <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
         </template>
-        <template #createdAt-data="{ row }">
-          <span>{{ format(row.createdAt, 'dd/MM/yy, hh:mm')}}</span>
-        </template>
-        <template #updatedAt-data="{ row }">
-          <span>{{ format(row.updatedAt, 'dd/MM/yy, hh:mm')}}</span>
+        <template #expensesPrice-data="{ row }">
+          <span>{{ row.expensesPrice }}{{ row.symbol }}</span>
         </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
@@ -61,8 +58,7 @@ useSeoMeta({
 // Table columns
 const defaultColumns = [
   { key: 'name', label: 'Nom' },
-  { key: 'createdAt', label: 'Date de création' },
-  { key: 'updatedAt', label: 'Date de modification' },
+  { key: 'expensesPrice', label: 'Prix' },
   { key: 'actions', label: 'Actions' }
 ]
 
@@ -99,7 +95,7 @@ const items = (row: Category) => {
 }
 // Table data
 const groupId = ref(route.query.group)
-const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/categories`, { query: { group: groupId }, deep: false, lazy: true, default: () => [],})
+const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/expenses/byCategories`, { query: { groupId: groupId }, deep: false, lazy: true, default: () => [],})
 function onFormClose() {
   createModalOpen.value = false
   updateModalOpen.value = false
