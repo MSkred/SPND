@@ -1,5 +1,3 @@
-import { asc, desc } from 'drizzle-orm';
-
 export default defineEventHandler(async (event) => {
 
   // Get data from route query

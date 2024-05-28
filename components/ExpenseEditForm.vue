@@ -6,7 +6,6 @@ const toast = useToast();
 const props = defineProps<{
   expense: Expense;
 }>();
-console.log('props is',  props.expense);
 const emits = defineEmits<{
   close: [];
 }>();

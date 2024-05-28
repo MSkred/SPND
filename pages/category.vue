@@ -1,7 +1,7 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Catégorie" :badge="categories.length">
+      <UDashboardNavbar title="Catégories" :badge="categories.length">
         <template #right>
           <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray" @click="createModalOpen = true" />
         </template>
@@ -23,18 +23,35 @@
       </UDashboardModal>
 
       <UDashboardToolbar>
+        <template #left>
+          <USelectMenu v-model="selectedTags" icon="i-heroicons-tag-20-solid" placeholder="Tag" multiple :options="filterTags" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
+            <template #label>
+              <span v-if="selectedTags.length" class="truncate">{{ selectedTags.length }} sélectionné{{ selectedTags.length > 1 ? 's' : '' }}</span>
+              <span v-else>Tag</span>
+            </template>
+          </USelectMenu>
+          <USelectMenu v-model="selectedBoards" icon="i-heroicons-table-cells-20-solid" placeholder="Tableau" multiple :options="filterBoards" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
+            <template #label>
+              <span v-if="selectedBoards.length" class="truncate">{{ selectedBoards.length }} sélectionné{{ selectedBoards.length > 1 ? 's' : '' }}</span>
+              <span v-else>Tableau</span>
+            </template>
+          </USelectMenu>
+        </template>
         <template #right>
           <USelectMenu v-model="selectedColumns" icon="i-heroicons-adjustments-horizontal-solid" :options="defaultColumns" multiple>
             <template #label> Affichage </template>
           </USelectMenu>
+          <UButton icon="i-heroicons-funnel" color="gray" size="xs" :disabled="selectedBoards.length === 0 && selectedTags.length === 0" @click="resetFilters">
+            Réintialiser
+          </UButton>
         </template>
       </UDashboardToolbar>
-      <UTable :columns="columns" :rows="categories" :loading="pending">
+        <UTable :columns="columns" :rows="categories" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
         <template #name-data="{ row }">
           <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
         </template>
         <template #expensesPrice-data="{ row }">
-          <span>{{ row.expensesPrice }}{{ row.symbol }}</span>
+          <span>{{ row.expensesPrice.toFixed(2) }}{{ row.symbol }}</span>
         </template>
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
@@ -52,16 +69,34 @@ import { fr } from "date-fns/locale";
 setDefaultOptions({ locale: fr });
 import { type Category } from '~/server/utils/drizzle'
 const route = useRoute();
-useSeoMeta({
-  title: 'Dashboard',
-})
+useSeoMeta({ title: 'Dashboard' })
+const groupId = ref(route.query.group)
 // Table columns
 const defaultColumns = [
-  { key: 'name', label: 'Nom' },
-  { key: 'expensesPrice', label: 'Prix' },
+  { key: 'name', label: 'Nom', sortable: true },
+  { key: 'expensesPrice', label: 'Prix', sortable: true },
   { key: 'actions', label: 'Actions' }
 ]
 
+const filterTags = computed(() => {
+  return tags.value.map(el => {
+    return { name: `${el.icon ? el.icon + ' ' : ''}${el.name}`, id: el.id }
+  })
+})
+const selectedTags = ref([])
+const filterBoards = computed(() => {
+  return boards.value.map(el => {
+    return { name: `${el.icon ? el.icon + ' ' : ''}${el.name}`, id: el.id }
+  })
+})
+const selectedBoards = ref([])
+const sort = ref({ column: 'expensesPrice', direction: 'desc' as const })
+
+const resetFilters = () => {
+  selectedTags.value = []
+  selectedBoards.value = []
+}
+const query = computed(() => ({ groupId: groupId.value, tagIds: selectedTags.value, boardIds: selectedBoards.value, sort: sort.value.column, order: sort.value.direction }))
 const selectedColumns = ref(defaultColumns)
 const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
 // Tables actions row
@@ -80,29 +115,22 @@ const items = (row: Category) => {
       icon: 'i-heroicons-arrow-right-circle-20-solid'
     }]
   ]
-  if (!row.private) {
-    items.push(
-      [{
-        label: 'Supprimer',
-        icon: 'i-heroicons-trash-20-solid',
-        click: () => {
-          currentCategory.value = row;
-          deleteModalOpen.value = true;
-        }
-      }])
-  }
   return items
 }
 // Table data
-const groupId = ref(route.query.group)
-const { data: categories, refresh, pending } = await useFetch<Category[]>(`/api/expenses/byCategories`, { query: { groupId: groupId }, deep: false, lazy: true, default: () => [],})
+const { data: categories, refresh: refreshExpensesByCategory, pending } = await useFetch<Category[]>(`/api/expenses/byCategories`, {
+  query,
+  deep: false,
+  lazy: true, 
+  default: () => []
+})
 function onFormClose() {
   createModalOpen.value = false
   updateModalOpen.value = false
   deleteModalOpen.value = false
   currentCategory.value = null;
   loading.value = false;
-  refresh()
+  refreshExpensesByCategory()
 }
 const createModalOpen = ref(false)
 const updateModalOpen = ref(false)
@@ -111,6 +139,20 @@ const deleteModalOpen = ref(false)
 const loading = ref(false)
 const toast = useToast()
 
+// FETCH TAGS BY GROUP
+const { data: tags, refresh: refreshTags } = await useFetch<Tag[]>(`/api/tags`, {
+  query: { group: groupId },
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
+// FETCH BOARDS BY GROUP
+const { data: boards, refresh: refreshBoards } = await useFetch<Board[]>(`/api/boards`, {
+  query: { group: groupId },
+  deep: false,
+  lazy: true,
+  default: () => [],
+})
 async function onDelete() {
   loading.value = true
   try {
@@ -128,6 +170,8 @@ async function onDelete() {
 }
 watch(() => route.query.group, () => {
   groupId.value = route.query.group
-  refresh()
+  refreshExpensesByCategory()
+  refreshTags()
+  refreshBoards()
 });
 </script>

@@ -53,9 +53,9 @@
             <template #label> Affichage </template>
           </USelectMenu>
 
-        <UButton icon="i-heroicons-funnel" color="gray" size="xs" :disabled="q === '' && selectedBoards.length === 0 && selectedCategories.length === 0 && selectedTags.length === 0" @click="resetFilters">
-          Réintialiser
-        </UButton>
+          <UButton icon="i-heroicons-funnel" color="gray" size="xs" :disabled="q === '' && selectedBoards.length === 0 && selectedCategories.length === 0 && selectedTags.length === 0" @click="resetFilters">
+            Réintialiser
+          </UButton>
         </template>
       </UDashboardToolbar>
 

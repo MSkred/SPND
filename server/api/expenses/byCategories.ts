@@ -1,28 +1,54 @@
-import { sum } from 'drizzle-orm'
-import { categories, currencies } from '~/server/database/schema';
+import { inArray } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
 
-  // Get group id from route query
-  const { groupId } = getQuery(event); // { key: "value", key2: ["value1", "value2"] }
+  // Get data from route query
+  let { groupId, tagIds, boardIds, sort, order } = getQuery(event) as { groupId: number, tagIds?: String[], boardIds?: String[], sort: 'name' | 'expensesPrice', order: 'asc' | 'desc'};
 
+  if (boardIds?.length) {
+    if (typeof boardIds === 'string') {
+      boardIds = [boardIds]
+    }
+  } else {
+    boardIds = []
+  }
 
-  const expenses = await useDrizzle()
+  if (tagIds?.length) {
+    if (typeof tagIds === 'string') {
+      tagIds = [tagIds]
+    }
+  } else {
+    tagIds = []
+  }
+
+  // SQL request
+  let expenses = await useDrizzle()
     .select({
-      id: tables.categories.id,
-      groupId: tables.categories.groupId,
       name: tables.categories.name,
       icon: tables.categories.icon,
       color: tables.categories.color,
-      expensesPrice: sum(tables.expenses.convertedPrice),
+      expensesPrice: sql<number>`sum(${tables.expenses.convertedPrice})`,
       symbol: tables.currencies.symbol
     })
     .from(tables.expenses)
-    .innerJoin(tables.categories, eq(tables.categories.id, tables.expenses.categoryId))
+    .innerJoin(tables.categories, and(eq(tables.categories.id, tables.expenses.categoryId), eq(tables.categories.groupId, groupId)))
+    .where(and(
+      boardIds.length > 0 ? inArray(tables.expenses.boardId, boardIds) : undefined,
+      tagIds.length > 0 ? inArray(tables.expenses.tagId, tagIds) : undefined,
+    ))
     .innerJoin(tables.groups, eq(tables.groups.id, tables.categories.groupId))
     .innerJoin(tables.currencies, eq(tables.currencies.id, tables.groups.currencyId))
     .groupBy(tables.categories.id)
-    .where(eq(tables.categories.groupId, groupId))
   
+  // Filter
+  expenses.sort((a, b) => {
+    if (!sort) return 0
+    const aValue = a[sort]
+    const bValue = b[sort]
+
+    if (aValue < bValue) return order === 'asc' ? -1 : 1
+    if (aValue > bValue) return order === 'asc' ? 1 : -1
+    return 0
+  })
   return expenses
 })
