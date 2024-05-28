@@ -54,7 +54,8 @@
           </USelectMenu>
         </template>
       </UDashboardToolbar>
-      <UTable :columns="columns" :rows="expenses" :loading="pending" v-model:sort="sort" sort-mode="manual">
+
+      <UTable :columns="columns" :rows="rows" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
         <template #empty-state>
           <div class="flex flex-col items-center justify-center py-6 gap-3">
             <span class="text-sm">Aucun dépense pour ce groupe</span>
@@ -90,7 +91,15 @@
             <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid"/>
           </UDropdown>
         </template>
+        <!-- <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700"> -->
+          
+
+        <!-- </div> -->
+        <!-- Number of rows & Pagination -->
       </UTable>
+          <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
+          <UPagination :active-button="{ variant: 'outline' }" :inactive-button="{ color: 'gray' }" v-model="page" :page-count="pageCount" :total="expenses.length" />
+        </div>
     </UDashboardPanel>
   </UDashboardPage>
 </template>
@@ -140,9 +149,13 @@ const filterBoards = computed(() => {
   })
 })
 const selectedBoards = ref([])
-const sort = ref({ column: 'name', direction: 'asc' as const })
+const sort = ref({ column: 'startDate', direction: 'desc' as const })
 const query = computed(() => ({ q: q.value, groupId: groupId.value, categoryIds: selectedCategories.value, tagIds: selectedTags.value, boardIds: selectedBoards.value, sort: sort.value.column, order: sort.value.direction })) // locations: selectedLocations.value
-
+const page = ref(1)
+const pageCount = 10
+const rows = computed(() => {
+  return expenses.value.slice((page.value - 1) * pageCount, (page.value) * pageCount)
+})
 useSeoMeta({ title: "Dépenses" });
 const groupId = ref(route.query.group)
 // Tables actions row
@@ -156,16 +169,6 @@ const items = (row: Expense) => {
     ],
     [ { label: "Accéder", icon: "i-heroicons-arrow-right-circle-20-solid" } ],
   ];
-  if (!row.private) {
-    items.push([
-      { label: "Supprimer", icon: "i-heroicons-trash-20-solid",
-        click: () => {
-          currentExpense.value = row;
-          deleteModalOpen.value = true;
-        },
-      },
-    ]);
-  }
   return items;
 };
 // FETCH EXPENSES
