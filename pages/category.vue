@@ -1,12 +1,6 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Catégories" :badge="rows.length">
-        <template #right>
-          <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray" @click="createModalOpen = true" />
-        </template>
-      </UDashboardNavbar>
-
       <UDashboardModal v-model="createModalOpen" title="Nouvelle catégorie" description="Créer une nouvelle catégorie dans votre système" :ui="{ width: 'sm:max-w-md' }">
         <CategoryCreateForm @close="onFormClose()" />
       </UDashboardModal>
@@ -22,6 +16,14 @@
         </template>
       </UDashboardModal>
 
+      <!-- Title and button -->
+      <UDashboardNavbar title="Catégories" :badge="rows.length">
+        <template #right>
+          <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray" @click="createModalOpen = true" />
+        </template>
+      </UDashboardNavbar>
+
+      <!-- Filter, display column and reset -->
       <UDashboardToolbar>
         <template #left>
           <USelectMenu v-model="selectedCategories" icon="i-heroicons-rectangle-stack-20-solid" placeholder="Catégorie" multiple :options="filterCategories" option-attribute="name" value-attribute="id" searchable searchablePlaceholder="Chercher…">
@@ -52,35 +54,79 @@
           </UButton>
         </template>
       </UDashboardToolbar>
-        <UTable :columns="columns" :rows="rows" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
-        <template #name-data="{ row }">
-          <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
-        </template>
-        <template #expensesPrice-data="{ row }">
-          <span>{{ row.expensesPrice.toFixed(2) }}{{ row.symbol }}</span>
-        </template>
-        <template #actions-data="{ row }">
-          <UDropdown :items="items(row)">
-            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-          </UDropdown>
-        </template>
-      </UTable>
+
+      <!-- Stats and list -->
+      <UDashboardPanelContent class="gap-4">
+
+        <!-- Statistics -->
+        <UDashboardCard>
+          <template #header>
+            <div class="flex flex-row flex-nowrap justify-between items-center w-full cursor-pointer" @click="openStats = !openStats" :class="{ 'pb-4': !openStats }">
+              <h1>Statistiques</h1>
+              <UIcon name="i-heroicons-chevron-up-20-solid duration-200 h-5 w-5" :class="{ '-rotate-180': openStats }"/>
+            </div>
+          </template>
+          <template #default v-if="openStats">
+            <div class="flex flex-row flex-nowrap gap-4 my-4 mt-0">
+
+              <!-- Donut chart -->
+              <UDashboardCard class="w-[50%]">
+                <ChartDonut :data="rows"/>
+              </UDashboardCard>
+
+              <!-- Bar chart -->
+              <UDashboardCard class="w-[50%]">
+                <ChartBar :data="rows"/>
+              </UDashboardCard>
+
+            </div>
+          </template>
+        </UDashboardCard>
+
+        <!-- Table list -->
+        <UDashboardCard :ui="{ wrapper: 'overflow-y-visible'}">
+          <template #header>
+            <div class="flex flex-row flex-nowrap justify-between items-center w-full cursor-pointer" @click="openList = !openList"  :class="{ 'pb-4': !openList }">
+              <h1>Listes</h1>
+              <UIcon name="i-heroicons-chevron-up-20-solid duration-200 h-5 w-5" :class="{ '-rotate-180': openList }"/>
+            </div>
+          </template>
+          <template #default v-if="openList">
+            <UTable :columns="columns" :rows="rows" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
+              <template #key-data="{ row }">
+                <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.key }}</span>
+              </template>
+              <template #value-data="{ row }">
+                <span>{{ row.value.toFixed(2) }}{{ row.symbol }}</span>
+              </template>
+              <template #actions-data="{ row }">
+                <UDropdown :items="items(row)">
+                  <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+                </UDropdown>
+              </template>
+            </UTable>
+          </template>
+        </UDashboardCard>
+
+      </UDashboardPanelContent>
     </UDashboardPanel>
   </UDashboardPage>
 </template>
 
 <script setup lang="ts">
-import { format, setDefaultOptions } from "date-fns";
+import { setDefaultOptions } from "date-fns";
 import { fr } from "date-fns/locale";
 setDefaultOptions({ locale: fr });
 import { type Category } from '~/server/utils/drizzle'
 const route = useRoute();
 useSeoMeta({ title: 'Dashboard' })
 const groupId = ref(route.query.group)
+const openList = ref(true)
+const openStats = ref(true)
 // Table columns
 const defaultColumns = [
-  { key: 'name', label: 'Nom', sortable: true },
-  { key: 'expensesPrice', label: 'Prix', sortable: true },
+  { key: 'key', label: 'Nom', sortable: true },
+  { key: 'value', label: 'Prix', sortable: true },
   { key: 'actions', label: 'Actions' }
 ]
 
@@ -102,7 +148,7 @@ const filterCategories = computed(() => {
   })
 })
 const selectedCategories = ref([])
-const sort = ref({ column: 'expensesPrice', direction: 'desc' as const })
+const sort = ref({ column: 'value', direction: 'desc' as const })
 
 const resetFilters = () => {
   selectedTags.value = []

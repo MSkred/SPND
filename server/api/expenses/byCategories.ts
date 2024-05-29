@@ -3,7 +3,7 @@ import { inArray } from 'drizzle-orm'
 export default defineEventHandler(async (event) => {
 
   // Get data from route query
-  let { groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { groupId: number, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'name' | 'expensesPrice', order: 'asc' | 'desc'};
+  let { groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { groupId: number, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'key' | 'value', order: 'asc' | 'desc'};
 
   if (boardIds?.length) {
     if (typeof boardIds === 'string') {
@@ -31,11 +31,11 @@ export default defineEventHandler(async (event) => {
   // SQL request
   let expenses = await useDrizzle()
     .select({
-      name: tables.categories.name,
+      key: tables.categories.name,
       icon: tables.categories.icon,
       color: tables.categories.color,
-      expensesPrice: sql<number>`sum(${tables.expenses.convertedPrice})`,
-      symbol: tables.currencies.symbol
+      value: sql<number>`sum(${tables.expenses.convertedPrice})`,
+      symbol: tables.currencies.symbol,
     })
     .from(tables.expenses)
     .innerJoin(tables.categories, and(eq(tables.categories.id, tables.expenses.categoryId), eq(tables.categories.groupId, groupId)))
