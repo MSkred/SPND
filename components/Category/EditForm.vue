@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { literal, object, string, type output } from "zod";
+import { object, string, type output } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
-const route = useRoute();
 const toast = useToast();
 import RegExp from "~/utils/regexp";
 
@@ -26,7 +25,7 @@ const schema = object({
 type Schema = output<typeof schema>;
 
 const state = reactive({
-  name: props.category.name,
+  key: props.category.name,
   color: props.category.color,
   icon: props.category.icon,
 });
@@ -55,6 +54,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     }
   }
 }
+function setColor(e: any) {
+  state.color = e;
+}
 </script>
 
 <template>
@@ -62,18 +64,15 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <UFormGroup label="Nom de la catégorie" name="name" required>
       <UInput
         placeholder="ex: Alimentation, Transport, Shopping, …"
-        v-model="state.name"
+        v-model="state.key"
       />
     </UFormGroup>
     <UFormGroup label="Icône de la catégorie" name="icon">
       <UInput placeholder="ex: 🍔, 🚎, 🛍️, …" v-model="state.icon" />
     </UFormGroup>
     <UFormGroup label="Couleur" name="color">
-      <UInput
-        type="color"
-        icon="i-heroicons-paint-brush-20-solid"
-        v-model="state.color"
-      />
+      <UInput type="color" icon="i-heroicons-paint-brush-20-solid" v-model="state.color"/>
+      <!-- <InputColorPicker @onSelect="setColor"/> -->
     </UFormGroup>
     <div class="flex flex-row justify-end">
       <UButton type="submit"> Modifier </UButton>

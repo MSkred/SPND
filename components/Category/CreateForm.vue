@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { literal, object, string, type output } from "zod";
+import { object, string, type output } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
 const route = useRoute();
 const toast = useToast();
@@ -51,6 +51,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     }
   }
 }
+function setColor(e: any) {
+  state.color = e;
+}
 </script>
 
 <template>
@@ -65,11 +68,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <UInput placeholder="ex: 🍔, 🚎, 🛍️, …" v-model="state.icon" />
     </UFormGroup>
     <UFormGroup label="Couleur" name="color">
-      <UInput
-        type="color"
-        icon="i-heroicons-paint-brush-20-solid"
-        v-model="state.color"
-      />
+      <UInput type="color" icon="i-heroicons-paint-brush-20-solid" v-model="state.color"/>
+      <!-- <InputColorPicker @onSelect="setColor"/> -->
     </UFormGroup>
     <div class="flex flex-row justify-end">
       <UButton type="submit"> Créer </UButton>
