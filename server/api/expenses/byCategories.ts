@@ -31,10 +31,11 @@ export default defineEventHandler(async (event) => {
   // SQL request
   let expenses = await useDrizzle()
     .select({
-      key: tables.categories.name,
+      id: tables.categories.id,
+      name: tables.categories.name,
       icon: tables.categories.icon,
       color: tables.categories.color,
-      value: sql<number>`sum(${tables.expenses.convertedPrice})`,
+      expensesPrice: sql<number>`sum(${tables.expenses.convertedPrice})`,
       symbol: tables.currencies.symbol,
     })
     .from(tables.expenses)
@@ -58,5 +59,9 @@ export default defineEventHandler(async (event) => {
     if (aValue > bValue) return order === 'asc' ? 1 : -1
     return 0
   })
-  return expenses
+
+  return {
+    rows: expenses,
+    charts: expenses.map(el => { return { key: el.name, value: el.expensesPrice, icon: el.icon, symbol: el.symbol } })
+  }
 })
