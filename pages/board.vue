@@ -146,7 +146,7 @@ function findAndBeautify(cible: Currency[], id: Number) {
   }
 }
 const groupId = ref(route.query.group)
-const { data: boards, refresh, pending } = await useFetch<Board[]>(`/api/boards`, { query: { group: groupId }, deep: false, lazy: true, default: () => [] });
+const { data: boards, refresh, pending } = await useFetch<Board[]>(`/api/boards`, { query: { groupId: groupId }, deep: false, lazy: true, default: () => [] });
 function onFormClose() {
   createModalOpen.value = false;
   updateModalOpen.value = false;

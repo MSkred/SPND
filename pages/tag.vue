@@ -112,7 +112,7 @@ const items = (row: Tag) => {
 }
 // Table data
 const groupId = ref(route.query.group)
-const { data: tags, refresh, pending } = await useFetch<Tag[]>(`/api/tags`, { query: { group : groupId }, deep: false, lazy: true, default: () => [] })
+const { data: tags, refresh, pending } = await useFetch<Tag[]>(`/api/tags`, { query: { groupId : groupId }, deep: false, lazy: true, default: () => [] })
 function onFormClose() {
   createModalOpen.value = false
   updateModalOpen.value = false
