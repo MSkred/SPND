@@ -31,6 +31,7 @@ watch(() => props.data, () => {
       :key="index"
       :value="category.percent"
       :label="category.icon + ' ' + category.key"
+      color="light"
       size="lg"
       class="flex-row-reverse items-center"
       :ui="{ label: { base: 'flex-shrink-0 w-28' }, indicator: { container: '!w-auto' }, meter: { base: 'flex-1' } }"
