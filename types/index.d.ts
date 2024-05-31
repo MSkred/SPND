@@ -1,4 +1,4 @@
-import type { Category } from "~/server/utils/drizzle"
+import type { Category, Tag } from "~/server/utils/drizzle"
 
 export type Period = 'daily' | 'weekly' | 'monthly'
 
@@ -14,8 +14,8 @@ export interface DonutChart {
   symbol: String
 }
 
-export interface ExpensesByCategories {
-  rows: Category[]
+export interface ExpensesBy {
+  rows: Category[] | Tag[]
   charts: DonutChart[]
 }
 

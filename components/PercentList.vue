@@ -30,7 +30,7 @@ watch(() => props.data, () => {
       v-for="(category, index) in cat.splice(0, 8)"
       :key="index"
       :value="category.percent"
-      :label="category.icon + ' ' + category.key"
+      :label="(category.icon ? category.icon + ' ' : '') + category.key"
       color="light"
       size="lg"
       class="flex-row-reverse items-center"

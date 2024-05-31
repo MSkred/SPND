@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { useDeleteCategories } from '~/composables/useDeleteCategories';
 import { type Category } from '~/server/utils/drizzle'
 import type { Column, Query, Sort } from '~/types';
 
-useSeoMeta({ title: 'Dashboard' })
+useSeoMeta({ title: 'Catégories' })
 
 // List toggle
 const openList = ref<Boolean>(true)
@@ -13,7 +14,7 @@ const createModalOpen = ref<Boolean>(false)
 const updateModalOpen = ref<Boolean>(false)
 const currentCategory = ref<Category | null>(null)
 const deleteModalOpen = ref<Boolean>(false)
-const { loading, onDelete } = await useDeleteCategory(currentCategory, onFormClose)
+const { loading, onDelete } = await useDeleteCategories(currentCategory, onFormClose)
 function onFormClose() {
   createModalOpen.value = false
   updateModalOpen.value = false
@@ -81,7 +82,7 @@ const resetFilters = () => {
   selectedBoards.value = []
   selectedCategories.value = []
 }
-const sort = ref<Sort>({ column: 'expensesPrice', direction: 'desc' as const })
+const sort = ref({ column: 'expensesPrice', direction: 'desc' as const })
 
 // Params, query, fetch and refresh onWatch
 const groupId = useGroupId()
@@ -118,7 +119,7 @@ watch(() => groupId, () => {
 
       <UDashboardModal v-if="currentCategory" v-model="deleteModalOpen" :title="`Suppression de la catégorie : ${currentCategory.name}`" :description="`Êtes-vous sûr de vouloir suprimer la catégorie : ${currentCategory.name} ?`" icon="i-heroicons-exclamation-circle" :ui="{ icon: { base: 'text-red-500 dark:text-red-400' } as any, footer: { base: 'ml-16' } as any }">
         <template #footer>
-          <UButton color="red" label="Supprimer" :loading="loading" @click="onDelete" />
+          <UButton color="red" label="Supprimer" @click="onDelete" />
           <UButton color="white" label="Annuler" @click="deleteModalOpen = false" />
         </template>
       </UDashboardModal>
@@ -183,7 +184,7 @@ watch(() => groupId, () => {
 
               <!-- Bar chart -->
               <UDashboardCard class="w-[50%]" title="Top catégories" description="Le top 8 des catégories où vous dépenssez le plus." icon="i-heroicons-rectangle-stack-20-solid">
-                <CategoryPercentList :data="data.charts" />
+                <PercentList :data="data.charts" />
               </UDashboardCard>
 
             </div>
