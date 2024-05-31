@@ -149,7 +149,7 @@ async function onDelete() {
       </UDashboardModal>
 
       <!-- Title and button -->
-      <UDashboardNavbar title="Catégories" :badge="data.rows.length">
+      <UDashboardNavbar v-if="data && data.rows "title="Catégories" :badge="data.rows.length">
         <template #right>
           <UButton label="Nouvelle catégorie" trailing-icon="i-heroicons-plus" color="gray" @click="createModalOpen = true" />
         </template>
@@ -199,7 +199,7 @@ async function onDelete() {
             </div>
           </template>
           <template #default v-if="openStats">
-            <div class="flex flex-row flex-nowrap gap-4 my-4 mt-0">
+            <div class="flex flex-row flex-nowrap gap-4 my-4 mt-0" v-if="data && data.charts">
 
               <!-- Donut chart -->
               <UDashboardCard class="w-[50%]">
@@ -224,7 +224,7 @@ async function onDelete() {
             </div>
           </template>
           <template #default v-if="openList">
-            <UTable :columns="columns" :rows="data.rows" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
+            <UTable v-if="data && data.rows" :columns="columns" :rows="data.rows" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
               <template #name-data="{ row }">
                 <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
               </template>

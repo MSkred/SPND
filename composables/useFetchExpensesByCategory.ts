@@ -1,13 +1,12 @@
-import type { Query } from "~/types"
+import type { ExpensesByCategories, Query } from "~/types"
 
 export const useFetchExpensesByCategory = async (query: ComputedRef<Query>) => {
 
   // Fetch data 
-  const { data, refresh, pending } = await useFetch<any[]>(`/api/expenses/byCategories`, {
+  const { data, refresh, pending } = await useFetch<ExpensesByCategories>(`/api/expenses/byCategories`, {
     query,
     deep: false,
-    lazy: true,
-    default: () => []
+    lazy: true
   })
 
   // Return data
