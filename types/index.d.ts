@@ -27,3 +27,12 @@ export interface Query {
     sort: String
     order: String
 }
+export interface Column {
+    key: String
+    label: String
+    sortable?: Boolean
+}
+export interface Sort {
+    column: String
+    direction: String
+}

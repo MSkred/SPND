@@ -1,8 +1,63 @@
 <script setup lang="ts">
-// NEW
-useSeoMeta({ title: 'Dashboard' })
-const groupId = useGroupId()
+import { type Category } from '~/server/utils/drizzle'
+import type { Column, Query, Sort } from '~/types';
 
+useSeoMeta({ title: 'Dashboard' })
+
+// List toggle
+const openList = ref<Boolean>(true)
+const openStats = ref<Boolean>(true)
+
+// Modal
+const createModalOpen = ref<Boolean>(false)
+const updateModalOpen = ref<Boolean>(false)
+const currentCategory = ref<Category | null>(null)
+const deleteModalOpen = ref<Boolean>(false)
+const { loading, onDelete } = await useDeleteCategory(currentCategory, onFormClose)
+function onFormClose() {
+  createModalOpen.value = false
+  updateModalOpen.value = false
+  deleteModalOpen.value = false
+  currentCategory.value = null;
+  loading.value = false;
+  refreshExpensesByCategory()
+}
+
+// Table 
+const defaultColumns = [
+  { key: 'name', label: 'Nom', sortable: true },
+  { key: 'expensesPrice', label: 'Prix', sortable: true },
+  { key: 'actions', label: 'Actions' }
+]
+const selectedColumns = ref<Array<Column>>(defaultColumns)
+const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
+const items = (row: Category) => {
+  let items = [
+    [{
+      label: 'Editer',
+      icon: 'i-heroicons-pencil-square-20-solid',
+      click: () => {
+        currentCategory.value = row
+        updateModalOpen.value = true;
+      }
+    }],
+    [{
+      label: 'Accéder',
+      icon: 'i-heroicons-arrow-right-circle-20-solid'
+    }], 
+    [{
+        label: 'Supprimer',
+        icon: 'i-heroicons-trash-20-solid',
+        click: () => {
+          currentCategory.value = row;
+          deleteModalOpen.value = true;
+        }
+    }]
+  ]
+  return items
+}
+
+// Filter
 const filterTags = computed(() => {
   return tags.value.map(el => {
     return { name: `${el.icon ? el.icon + ' ' : ''}${el.name}`, id: el.id }
@@ -21,14 +76,15 @@ const filterCategories = computed(() => {
   })
 })
 const selectedCategories = ref([])
-
 const resetFilters = () => {
   selectedTags.value = []
   selectedBoards.value = []
   selectedCategories.value = []
 }
+const sort = ref<Sort>({ column: 'expensesPrice', direction: 'desc' as const })
 
-const sort = ref({ column: 'expensesPrice', direction: 'desc' as const })
+// Params, query, fetch and refresh onWatch
+const groupId = useGroupId()
 const query : ComputedRef<Query> = computed(() => ({
   groupId: groupId.value,
   tagIds: selectedTags.value,
@@ -37,97 +93,16 @@ const query : ComputedRef<Query> = computed(() => ({
   sort: sort.value.column,
   order: sort.value.direction
 }))
-
-// NEW
-// data fetching
 const { data, refreshExpensesByCategory, pending } = await useFetchExpensesByCategory(query)
 const { tags, refreshTags } = await useFetchTags(query)
 const { boards, refreshBoards } = await useFetchBoards(query)
 const { categories, refreshCategories } = await useFetchCategories(query)
-// get filter datas
-// const { filterTags, selectedTags, filterBoards, selectedBoards, filterCategories, selectedCategories, resetFilters } = await useFilters(boards, categories, tags);
-// watch query params and update data on change
 watch(() => groupId, () => {
   refreshExpensesByCategory()
   refreshTags()
   refreshBoards()
   refreshCategories()
 });
-// list toggles
-const openList = ref(true)
-const openStats = ref(true)
-
-// OLD 
-import { type Category } from '~/server/utils/drizzle'
-import type { Query } from '~/types';
-
-
-
-// Table columns
-const defaultColumns = [
-  { key: 'name', label: 'Nom', sortable: true },
-  { key: 'expensesPrice', label: 'Prix', sortable: true },
-  { key: 'actions', label: 'Actions' }
-]
-const selectedColumns = ref(defaultColumns)
-const columns = computed(() => defaultColumns.filter(column => selectedColumns.value.includes(column)))
-// Tables actions row
-const items = (row: Category) => {
-  let items = [
-    [{
-      label: 'Editer',
-      icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => {
-        currentCategory.value = row
-        updateModalOpen.value = true;
-      }
-    }],
-    [{
-      label: 'Accéder',
-      icon: 'i-heroicons-arrow-right-circle-20-solid'
-    }]
-  ]
-  return items
-}
-
-
-
-function onFormClose() {
-  createModalOpen.value = false
-  updateModalOpen.value = false
-  deleteModalOpen.value = false
-  currentCategory.value = null;
-  loading.value = false;
-  refreshExpensesByCategory()
-}
-
-const createModalOpen = ref(false)
-const updateModalOpen = ref(false)
-const currentCategory = ref<Category | null>(null)
-const deleteModalOpen = ref(false)
-
-
-// FETCH CATEGORIES BY GROUP
-
-const toast = useToast()
-const loading = ref(false)
-async function onDelete() {
-  loading.value = true
-  try {
-    await $fetch(`/api/categories/${currentCategory.value.id}`, { method: 'DELETE' })
-    toast.add({ icon: 'i-heroicons-check-circle', title: `La catégorie "${currentCategory.value.name}" a bien été supprimé.`, color: 'green' })
-    onFormClose()
-  }
-  catch (e) {
-    if (e instanceof Error) {
-      console.error(e)
-      toast.add({ icon: 'i-heroicons-exclamation-circle', title: 'Veuillez réessayer', description: e.message, color: 'red' })
-      loading.value = false;
-    }
-  }
-}
-// useDeleteCategory()
-
 </script>
 
 <template>
@@ -229,7 +204,7 @@ async function onDelete() {
                 <span class="rounded text-white px-1.5 py-0.5">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
               </template>
               <template #expensesPrice-data="{ row }">
-                <span>{{ row.expensesPrice.toFixed(2) }}{{ row.symbol }}</span>
+                <span>{{ row.expensesPrice ? row.expensesPrice.toFixed(2) : 0 }}{{ row.symbol }}</span>
               </template>
               <template #actions-data="{ row }">
                 <UDropdown :items="items(row)">
