@@ -34,7 +34,6 @@ export default defineEventHandler(async (event) => {
       id: tables.categories.id,
       name: tables.categories.name,
       icon: tables.categories.icon,
-      color: tables.categories.color,
       expensesPrice: sql<number>`sum(${tables.expenses.convertedPrice})`,
       symbol: tables.currencies.symbol,
     })

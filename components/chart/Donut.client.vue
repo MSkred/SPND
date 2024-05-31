@@ -19,7 +19,7 @@ const props = defineProps({
 })
 const triggers = {
   [Donut.selectors.segment]: d => {
-    return `${d.data.icon ? d.data.icon + ' ' : ''}${d.data.key}: ${d.value.toFixed(2)}`
+    return `${d.data.icon ? d.data.icon + ' ' : ''}${d.data.key}: ${d.value.toFixed(2)}€`
   }
 }
 const sortFunction = (a, b) => a - b

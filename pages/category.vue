@@ -226,7 +226,7 @@ async function onDelete() {
           <template #default v-if="openList">
             <UTable v-if="data && data.rows" :columns="columns" :rows="data.rows" :loading="pending" v-model:sort="sort" sort-mode="manual"  :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }" :progress="{ color: 'primary', animation: 'carousel' }">
               <template #name-data="{ row }">
-                <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
+                <span class="rounded text-white px-1.5 py-0.5">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
               </template>
               <template #expensesPrice-data="{ row }">
                 <span>{{ row.expensesPrice.toFixed(2) }}{{ row.symbol }}</span>

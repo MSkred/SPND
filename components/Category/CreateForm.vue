@@ -13,17 +13,13 @@ const schema = object({
   name: string({ message: "Obligatoire" }).min(2, {
     message: "Le nom doit faire minimum 2 caractères",
   }),
-  icon: string()
-    .regex(RegExp().EmojiValidation, { message: "Doit être un emoji" })
-    .nullish(),
-  color: string().nullish(),
+  icon: string().regex(RegExp().EmojiValidation, { message: "Doit être un emoji" })
 });
 
 type Schema = output<typeof schema>;
 
 const state = reactive({
   name: undefined,
-  color: undefined,
   icon: undefined,
   group_id: route.query.group,
 });
@@ -51,9 +47,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     }
   }
 }
-function setColor(e: any) {
-  state.color = e;
-}
 </script>
 
 <template>
@@ -66,10 +59,6 @@ function setColor(e: any) {
     </UFormGroup>
     <UFormGroup label="Icône de la catégorie" name="icon">
       <UInput placeholder="ex: 🍔, 🚎, 🛍️, …" v-model="state.icon" />
-    </UFormGroup>
-    <UFormGroup label="Couleur" name="color">
-      <UInput type="color" icon="i-heroicons-paint-brush-20-solid" v-model="state.color"/>
-      <!-- <InputColorPicker @onSelect="setColor"/> -->
     </UFormGroup>
     <div class="flex flex-row justify-end">
       <UButton type="submit"> Créer </UButton>

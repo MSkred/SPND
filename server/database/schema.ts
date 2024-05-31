@@ -41,8 +41,7 @@ export const expenses = sqliteTable('expenses', {
 export const categories = sqliteTable('categories', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  icon: text('icon'),
-  color: text('color'),
+  icon: text('icon').notNull(),
   groupId: integer('group_id').notNull().references(() => groups.id),
   createdAt: text('created_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`),
   updatedAt: text('updated_at').notNull().$defaultFn(() => sql`(CURRENT_TIMESTAMP)`).$onUpdateFn(() => sql`(CURRENT_TIMESTAMP)`),
