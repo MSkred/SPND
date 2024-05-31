@@ -60,7 +60,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         v-model="state.key"
       />
     </UFormGroup>
-    <UFormGroup label="Icône de la catégorie" name="icon">
+    <UFormGroup label="Icône de la catégorie" name="icon" required>
       <UInput placeholder="ex: 🍔, 🚎, 🛍️, …" v-model="state.icon" />
     </UFormGroup>
     <div class="flex flex-row justify-end">
