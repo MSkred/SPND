@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
       symbol: tables.currencies.symbol,
     })
     .from(tables.expenses)
-    .innerJoin(tables.categories, and(eq(tables.categories.id, tables.expenses.categoryId), eq(tables.categories.groupId, groupId)))
+    .fullJoin(tables.categories, and(eq(tables.categories.id, tables.expenses.categoryId), eq(tables.categories.groupId, groupId)))
     .where(and(
       boardIds.length > 0 ? inArray(tables.expenses.boardId, boardIds) : undefined,
       tagIds.length > 0 ? inArray(tables.expenses.tagId, tagIds) : undefined,
