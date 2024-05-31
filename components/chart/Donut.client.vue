@@ -15,6 +15,10 @@ const props = defineProps({
   data: {
     type: Array<any>,
     required: true
+  },
+  label: {
+    type: String, 
+    required: true
   }
 })
 const triggers = {
@@ -34,8 +38,8 @@ const legendItems = Object.entries(props.data).map(([_, d]) => ({
   <VisSingleContainer>
     <VisTooltip :triggers="triggers" />
     <VisDonut
-      centralLabel="Catégories" 
-      centralSubLabel="Vos dépenses par catégorie"
+      :centralLabel="label + 's'" 
+      :centralSubLabel="`Vos dépenses par ${label.toLowerCase()}`"
       :value="d => d.value"
       :data="data"
       :showEmptySegments="true"

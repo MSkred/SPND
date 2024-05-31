@@ -78,7 +78,7 @@
 
               <!-- Donut chart -->
               <UDashboardCard class="w-[50%]">
-                <ChartDonut :data="data.charts"/>
+                <ChartDonut label="Tag" :data="data.charts"/>
               </UDashboardCard>
 
               <!-- Bar chart -->

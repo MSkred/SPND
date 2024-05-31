@@ -179,7 +179,7 @@ watch(() => groupId, () => {
 
               <!-- Donut chart -->
               <UDashboardCard class="w-[50%]">
-                <ChartDonut :data="data.charts"/>
+                <ChartDonut label="Catégorie" :data="data.charts"/>
               </UDashboardCard>
 
               <!-- Bar chart -->
