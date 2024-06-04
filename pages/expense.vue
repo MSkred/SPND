@@ -192,21 +192,21 @@ const { data: expenses, refresh: refreshExpenses, pending } = await useFetch<Exp
 });
 // FETCH CATEGORIES BY GROUP
 const { data: categories, refresh: refreshCategories } = await useFetch<Category[]>(`/api/categories`, {
-  query: { group: groupId },
+  query: { groupId: groupId },
   deep: false,
   lazy: true,
   default: () => [],
 })
 // FETCH TAGS BY GROUP
 const { data: tags, refresh: refreshTags } = await useFetch<Tag[]>(`/api/tags`, {
-  query: { group: groupId },
+  query: { groupId: groupId },
   deep: false,
   lazy: true,
   default: () => [],
 })
 // FETCH BOARDS BY GROUP
 const { data: boards, refresh: refreshBoards } = await useFetch<Board[]>(`/api/boards`, {
-  query: { group: groupId },
+  query: { groupId: groupId },
   deep: false,
   lazy: true,
   default: () => [],

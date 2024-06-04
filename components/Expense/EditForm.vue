@@ -71,19 +71,19 @@ const { data: currencies } = await useFetch<Currency[]>(`/api/currencies`, {
   default: () => [],
 });
 // FETCH CATEGORIES BY GROUP
-const { data: categories } = await useFetch<Category[]>(`/api/categories?group=${route.query.group}`, {
+const { data: categories } = await useFetch<Category[]>(`/api/categories?groupId=${route.query.group}`, {
   deep: false,
   lazy: true,
   default: () => [],
 })
 // FETCH TAGS BY GROUP
-const { data: tags } = await useFetch<Tag[]>(`/api/tags?group=${route.query.group}`, {
+const { data: tags } = await useFetch<Tag[]>(`/api/tags?groupId=${route.query.group}`, {
   deep: false,
   lazy: true,
   default: () => [],
 })
 // FETCH BOARDS BY GROUP
-const { data: boards } = await useFetch<Board[]>(`/api/boards?group=${route.query.group}`, {
+const { data: boards } = await useFetch<Board[]>(`/api/boards?groupId=${route.query.group}`, {
   deep: false,
   lazy: true,
   default: () => [],
