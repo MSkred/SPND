@@ -13,18 +13,18 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@iconify-json/simple-icons": "^1.1.102",
-    "@nuxt/eslint": "^0.3.12",
+    "@iconify-json/simple-icons": "^1.1.104",
+    "@nuxt/eslint": "^0.3.13",
     "@nuxt/ui": "^2.16.0",
     "@nuxt/ui-pro": "^1.2.0",
-    "@nuxthub/core": "^0.5.17",
+    "@nuxthub/core": "^0.6.4",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/i18n": "^8.3.1",
     "@unovis/ts": "^1.4.1",
     "@unovis/vue": "^1.4.1",
     "@vueuse/nuxt": "^10.10.0",
     "date-fns": "^3.6.0",
-    "drizzle-orm": "^0.30.10",
+    "drizzle-orm": "^0.31.0",
     "nuxt": "^3.11.2",
     "nuxt-auth-utils": "^0.0.25",
     "nuxt-gtag": "^2.0.6",
@@ -32,11 +32,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^0.3.12",
-    "drizzle-kit": "^0.21.2",
-    "eslint": "^9.2.0",
-    "sass": "^1.77.2",
-    "vue-tsc": "^2.0.18",
-    "wrangler": "^3.56.0"
+    "@nuxt/eslint-config": "^0.3.13",
+    "drizzle-kit": "^0.22.1",
+    "eslint": "^9.4.0",
+    "sass": "^1.77.4",
+    "vue-tsc": "^2.0.19",
+    "wrangler": "^3.58.0"
   }
 }
