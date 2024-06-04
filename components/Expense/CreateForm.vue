@@ -65,7 +65,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 }
 // FETCH CURRENCIES
 const { data: currencies, refresh: refreshCurrencies } = await useFetch<Currency[]>(`/api/currencies`, {
-  query: { board: boardId, groupId: groupId},
+  query: { boardId, groupId},
   deep: false,
   lazy: true,
   default: () => [],
