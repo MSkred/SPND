@@ -36,3 +36,21 @@ export interface Sort {
     column: String
     direction: String
 }
+
+export interface CurrencySyncApi {
+  ts: number
+  base: string
+  quotes: Object
+}
+export interface SymbolLocalJson {
+  flag: string
+  country: string
+  currency: string
+  iso_code: string
+  symbol: string
+  hex_symbol: string
+}
+export interface PatchCurrency {
+  isoCode: string
+  rate: number
+}

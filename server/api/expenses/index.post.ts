@@ -1,4 +1,5 @@
 import { object, string, number, boolean, date } from 'zod'
+import { CurrencySyncApi } from '~/types';
 
 export default defineEventHandler(async (event) => {
   
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
     group_id: number({ coerce: true }),
   }).parse)
 
-  let groupCurrency, expenseCurrency, group;
+  let groupCurrency, expenseCurrency, group, ts;
   // Get linked group by id
   group = await useDrizzle().select().from(tables.groups).where(eq(tables.groups.id, body.group_id)).get()
   if (group) {
@@ -29,6 +30,15 @@ export default defineEventHandler(async (event) => {
   }
   // GET linked currency to this expense
   expenseCurrency = await useDrizzle().select().from(tables.currencies).where(eq(tables.currencies.id, body.currency_id)).get()
+
+  // SET updated timestamp
+  ts = new Date(expenseCurrency!.updatedAt).getTime()
+
+  // Fetch currencies-api and pass timestamp query params for compare with API 
+  const currenciesSync = await $fetch<CurrencySyncApi>('/api/currencies/sync', { method: 'POST', query: { ts } })
+  
+  // If currencies sync refetch expense currency with new rate
+  if (!currenciesSync) expenseCurrency = await useDrizzle().select().from(tables.currencies).where(eq(tables.currencies.id, body.currency_id)).get()
 
   if (expenseCurrency) {
     // Create category with data from body
