@@ -31,7 +31,7 @@ const groupId = ref(route.query.group)
 const state = reactive({
   name: undefined,
   price: undefined,
-  start_date: undefined,
+  start_date: new Date(),
   end_date: undefined,
   currency_id: null,
   category_id: undefined,
