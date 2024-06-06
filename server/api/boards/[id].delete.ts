@@ -1,7 +1,8 @@
 import { number, object } from 'zod'
 
 export default defineEventHandler(async (event) => {
-  // TODO verify if user is in the group 
+  // TODO: verify if user is in the board's group 
+  // TODO: verify if user have admin permission
   
   // Get route params id
   const params = await getValidatedRouterParams(event, object({

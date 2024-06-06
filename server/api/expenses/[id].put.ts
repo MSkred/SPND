@@ -1,31 +1,34 @@
-import { object, string, number, boolean, date } from 'zod'
+import { object, string, number } from 'zod'
 
 export default defineEventHandler(async (event) => {
+  // TODO: verify if user is in the expense's group 
+  // TODO: verify if user have admin permission
 
+  // Get id parameter from path
   const params = await getValidatedRouterParams(event, object({
     id: number({ coerce: true }),
   }).parse,)
 
 
-  // Verify body key types
+  // Read and validate data from request body
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
     price: number().positive(),
     startDate: string(),
     endDate: string().nullish(),
-    currency_id: string(),
+    currency_id: number({ coerce: true }),
     category_id: number({ coerce: true }),
     board_id: number({ coerce: true }),
     tag_id: number({ coerce: true }).nullish(),
   }).parse)
 
-  // Create category with data from body
+  // Update category by categoryId with data from body
   await useDrizzle().update(tables.expenses).set({
     name: body.name,
     price: body.price,
     startDate: body.startDate,
     endDate: body.endDate,
-    currency_id: body.currency_id,
+    currencyId: body.currency_id,
     categoryId: body.category_id,
     tagId: body.tag_id,
     boardId: body.board_id,

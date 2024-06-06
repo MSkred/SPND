@@ -2,33 +2,36 @@ import { inArray } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
 
-  // Get data from route query
+  // TODO: verify if user is in the expense's group 
+
+  // Destructure query from the request
   let { groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { groupId: number, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'key' | 'value', order: 'asc' | 'desc'};
 
-  if (boardIds?.length) {
-    if (typeof boardIds === 'string') {
-      boardIds = [boardIds]
+  
+  if (boardIds?.length) { // Verify if boardIds query param is present
+    
+    if (typeof boardIds === 'string') { // Verify if the query param value is string
+      boardIds = [boardIds] // Set the value in an array
     }
   } else {
-    boardIds = []
+    boardIds = [] // If not set the variable as an empty array
+  }
+  if (tagIds?.length) { // Verify if tagIds query param is present
+    if (typeof tagIds === 'string') { // Verify if the query param value is string
+      tagIds = [tagIds] // Set the value in an array
+    }
+  } else {
+    tagIds = [] // If not set the variable as an empty array
+  }
+  if (categoryIds?.length) { // Verify if categoryIds query param is present
+    if (typeof categoryIds === 'string') { // Verify if the query param value is string
+      categoryIds = [categoryIds] // Set the value in an array
+    }
+  } else {
+    categoryIds = [] // If not set the variable as an empty array
   }
 
-  if (tagIds?.length) {
-    if (typeof tagIds === 'string') {
-      tagIds = [tagIds]
-    }
-  } else {
-    tagIds = []
-  }
-  if (categoryIds?.length) {
-    if (typeof categoryIds === 'string') {
-      categoryIds = [categoryIds]
-    }
-  } else {
-    categoryIds = []
-  }
-
-  // SQL request
+  // Get all expenses grouped by category
   let expenses = await useDrizzle()
     .select({
       id: tables.categories.id,
@@ -48,7 +51,7 @@ export default defineEventHandler(async (event) => {
     .innerJoin(tables.currencies, eq(tables.currencies.id, tables.groups.currencyId))
     .groupBy(tables.categories.id)
   
-  // Filter
+  // Sort sql response if sort param is present
   expenses.sort((a, b) => {
     if (!sort) return 0
     const aValue = a[sort]
@@ -59,6 +62,7 @@ export default defineEventHandler(async (event) => {
     return 0
   })
 
+  // Return two objects, rows for the table and charts for the statistics
   return {
     rows: expenses,
     charts: expenses.map(el => { return { key: el.name, value: el.expensesPrice, icon: el.icon, symbol: el.symbol } })

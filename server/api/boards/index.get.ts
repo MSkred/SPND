@@ -1,9 +1,10 @@
 export default defineEventHandler(async (event) => {
+  // TODO: verify if user is in the board's group 
 
-  // Get group id from route query
-  const { groupId } = getQuery(event); // { key: "value", key2: ["value1", "value2"] }
+  // Get group id from call api query
+  const { groupId } = getQuery(event);
 
-  // SQL request
+  // GET all boards by group_id
   const boards = await useDrizzle()
     .select()
     .from(tables.boards)

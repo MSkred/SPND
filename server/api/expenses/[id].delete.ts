@@ -1,9 +1,10 @@
 import { number, object } from 'zod'
 
 export default defineEventHandler(async (event) => {
-  // TODO verify if user is in the group 
+  // TODO: verify if user is in the expense's group 
+  // TODO: verify if user have admin permission
 
-  // Get route params id
+  // Get id from path parameter
   const params = await getValidatedRouterParams(event, object({
     id: number({ coerce: true }),
   }).parse,)

@@ -1,9 +1,10 @@
 export default defineEventHandler(async (event) => {
+  // TODO: verify if user is in the category's group 
 
-  // Get group id from route query
-  const { groupId } = getQuery(event); // { key: "value", key2: ["value1", "value2"] }
+  // Get group id from call api query
+  const { groupId } = getQuery(event);
 
-  // SQL request
+  // Get all categories by group_id
   const categories = await useDrizzle()
     .select()
     .from(tables.categories)

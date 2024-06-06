@@ -1,4 +1,12 @@
 export default defineEventHandler(() => {
+  /** Return all local currencies informations Array<Object>
+   * @param flag
+   * @param country
+   * @param currency
+   * @param iso_code
+   * @param symbol
+   * @param hex_symbol
+  */
   return [
     {
       "flag": "Albania flag",
