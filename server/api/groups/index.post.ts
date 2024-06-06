@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
       groupId: group.id
     }).returning();
 
+    // TODO: add this groupId in userSession
     return sendNoContent(event, 201)
   }
 })

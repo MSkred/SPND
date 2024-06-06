@@ -18,5 +18,6 @@ export default defineEventHandler(async (event) => {
     eq(tables.groups.id, params.id)
   ).returning();
   
+  // TODO: remove this groupId from userSession
   return sendNoContent(event, 204)
 })

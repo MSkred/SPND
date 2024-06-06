@@ -38,8 +38,7 @@ export default oauth.googleEventHandler({
 
     // Check if user already ve associate groups
     if (user) {
-      const userGroups = await useDrizzle().select().from(tables.usersToGroups).where(eq(tables.usersToGroups.userId, user.id)).get()
-      
+      const userGroups = await useDrizzle().select({id: tables.usersToGroups.groupId}).from(tables.usersToGroups).where(eq(tables.usersToGroups.userId, user.id))
       // Get EUR currency
       const eurCurrency = await useDrizzle().select().from(tables.currencies).where(eq(tables.currencies.isoCode, 'EUR')).get()
   
@@ -65,7 +64,8 @@ export default oauth.googleEventHandler({
           email: gUser.email,
           picture: gUser.picture,
           locale: gUser.locale,
-        }
+          groupIds: userGroups.map(el => el.id)
+        },
       })
     }
 
