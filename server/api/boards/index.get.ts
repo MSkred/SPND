@@ -1,7 +1,6 @@
-import { requireUserGroupAccess } from "~/server/utils/group";
 
 export default defineEventHandler(async (event) => {
-  // TODO: verify if user is in the board's group 
+  // Verify if this user ve access to this group
   await requireUserGroupAccess(event)
   
   // Get group id from call api query
