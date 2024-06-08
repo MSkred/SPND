@@ -1,7 +1,7 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Groupes" :badge="categories.length">
+      <UDashboardNavbar title="Groupes" :badge="groups.length">
         <template #right>
           <UButton label="Nouveau groupe" trailing-icon="i-heroicons-plus" color="gray"
             @click="createModalOpen = true" />
@@ -42,7 +42,7 @@
           </USelectMenu>
         </template>
       </UDashboardToolbar>
-      <UTable :columns="columns" :rows="categories" :loading="pending">
+      <UTable :columns="columns" :rows="groups" :loading="pending">
         <template #actions-data="{ row }">
           <UDropdown :items="items(row)">
             <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
@@ -77,10 +77,12 @@ const defaultColumns = [{
 }, {
   key: 'createdAt',
   label: 'Date de création'
-}, {
+  },
+  {
   key: 'updatedAt',
   label: 'Date de modification'
-  }, {
+  },
+  {
     key: 'actions',
     label:'Actions'
 }
@@ -117,7 +119,7 @@ const items = (row: Group) => {
   return items
 }
 // Table data
-const { data: categories, refresh, pending } = await useFetch<Group[]>(`/api/groups/byUser`, {
+const { data: groups, refresh, pending } = await useFetch<Group[]>(`/api/groups/byUser`, {
   deep: false,
   lazy: true,
   default: () => [],

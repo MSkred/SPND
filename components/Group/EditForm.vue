@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { object, string, type output } from 'zod'
+import { number, object, string, type output } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 import { type Group } from '~/server/utils/drizzle'
 
@@ -14,7 +14,7 @@ const emits = defineEmits<{
 
 const schema = object({
   name: string({ message: 'Obligatoire' }).min(2, { message: "Le nom doit faire minimum 2 caractères" }),
-  currency_id: string({ message: 'Obligatoire' }),
+  currency_id: number(),
 })
 
 type Schema = output<typeof schema>
@@ -59,10 +59,16 @@ const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
     <UFormGroup label="Nom du groupe" name="name" required>
       <UInput placeholder="ex: Ménage, Tour du monde, …" v-model="state.name" />
     </UFormGroup>
-    <UFormGroup label="Devise" name="currency_iso_code" required>
-      <USelectMenu v-model="state.currency_id" searchable-placeholder="Sélection de la devise"
-        :options="currencies" placeholder="Choix de la devise…" value-attribute="id" searchable
-        option-attribute="isoCode" />
+    <UFormGroup label="Devise" name="currency_id" required>
+      <USelectMenu
+        v-model="state.currency_id"
+        searchable-placeholder="Sélection de la devise"
+        :options="currencies"
+        placeholder="Choix de la devise…"
+        value-attribute="id"
+        searchable
+        option-attribute="isoCode"
+      />
     </UFormGroup>
     <div class="flex flex-row justify-end">
       <UButton type="submit">

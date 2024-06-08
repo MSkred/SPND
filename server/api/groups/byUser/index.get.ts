@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   if (userSession) {
     // SQL request
     const groups = await useDrizzle()
-      .select({id: tables.groups.id, name: tables.groups.name })
+      .select({id: tables.groups.id, name: tables.groups.name, currency_id: tables.groups.currencyId, private: tables.groups.private, createdAt: tables.groups.createdAt, updatedAt: tables.groups.updatedAt })
       .from(tables.groups)
       .innerJoin(tables.usersToGroups, eq(tables.groups.id, tables.usersToGroups.groupId))
       .where(eq(tables.usersToGroups.userId, userSession.user.id))
