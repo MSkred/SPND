@@ -11,13 +11,11 @@ export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
     icon: string().regex(EmojiValidation, { message: 'Doit être un emoji' }).nullish(),
-    color: string().nullish()
   }).parse)
 
   await useDrizzle().update(tables.tags).set({
     name: body.name,
     icon: body.icon,
-    color: body.color,
   })
     .where(eq(tables.tags.id, params.id))
     .execute()

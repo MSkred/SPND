@@ -100,7 +100,7 @@
           <template #default v-if="openList">
             <UTable v-if="data && data.rows" :columns="columns" :rows="data.rows" :loading="pending">
               <template #name-data="{ row }">
-                <span class="rounded text-white px-1.5 py-0.5" :style="{ 'background-color': row.color }">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
+                <span class="rounded text-white px-1.5 py-0.5">{{ row.icon ? row.icon + ' ' : '' }}{{ row.name }}</span>
               </template>
               <template #expensesPrice-data="{ row }">
                 <span>{{ row.expensesPrice ? row.expensesPrice.toFixed(2) : 0 }}{{ row.symbol }}</span>

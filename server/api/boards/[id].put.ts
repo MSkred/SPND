@@ -19,7 +19,6 @@ export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
     icon: string().regex(EmojiValidation, { message: 'Doit être un emoji' }).nullish(),
-    color: string().nullish(),
     currency_id: number(),
     income: number().nonnegative().nullish(),
     objective: number().nonnegative(),
@@ -31,7 +30,6 @@ export default defineEventHandler(async (event) => {
   await useDrizzle().update(tables.boards).set({
     name: body.name,
     icon: body.icon,
-    color: body.color,
     currencyId: body.currency_id,
     income: body.income,
     objective: body.objective,

@@ -19,13 +19,11 @@ const schema = object({
   icon: string()
     .regex(EmojiValidation, { message: "Doit être un emoji" })
     .nullish(),
-  color: string().nullish(),
 });
 
 type Schema = output<typeof schema>;
 const state = reactive({
   name: props.tag.name,
-  color: props.tag.color,
   icon: props.tag.icon,
 });
 
@@ -65,13 +63,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     </UFormGroup>
     <UFormGroup label="Icône du tag" name="icon">
       <UInput placeholder="ex: 🏯, 📦, 🎂, …" v-model="state.icon" />
-    </UFormGroup>
-    <UFormGroup label="Couleur" name="color">
-      <UInput
-        type="color"
-        icon="i-heroicons-paint-brush-20-solid"
-        v-model="state.color"
-      />
     </UFormGroup>
     <div class="flex flex-row justify-end">
       <UButton type="submit"> Modifier </UButton>

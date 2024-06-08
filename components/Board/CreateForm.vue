@@ -14,7 +14,6 @@ const schema = object({
     message: "Le nom doit faire minimum 2 caractères",
   }),
   icon: string().regex(EmojiValidation, { message: "Doit être un emoji" }).nullish(),
-  color: string().nullish(),
   currency_id: number(),
   income: number().nonnegative().nullish(),
   objective: number().nonnegative(),
@@ -30,7 +29,6 @@ setDefaultOptions({ locale: fr });
 
 const state = reactive({
   name: undefined,
-  color: undefined,
   icon: undefined,
   currency_id: undefined,
   income: undefined,
@@ -80,13 +78,6 @@ const { data: currencies } = await useFetch<Group[]>(`/api/currencies`, {
     </UFormGroup>
     <UFormGroup label="Icône du tableau" name="icon">
       <UInput placeholder="ex: 🇯🇵, 🥳, 🤡, …" v-model="state.icon" />
-    </UFormGroup>
-    <UFormGroup label="Couleur" name="color">
-      <UInput
-        type="color"
-        icon="i-heroicons-paint-brush-20-solid"
-        v-model="state.color"
-      />
     </UFormGroup>
     <UFormGroup label="Devise" name="currency_id" required>
       <USelectMenu
