@@ -1,3 +1,5 @@
+import type { Group } from "./server/utils/drizzle"
+
 // auth.d.ts
 declare module '#auth-utils' {
   interface User {
@@ -12,6 +14,8 @@ declare module '#auth-utils' {
 
   interface UserSession {
     // Add your own fields
+    user: User
+    groups: Group[]
   }
 }
 
