@@ -117,7 +117,7 @@ const items = (row: Group) => {
   return items
 }
 // Table data
-const { data: categories, refresh, pending } = await useFetch<Group[]>(`/api/users/${user.value.id}/groups`, {
+const { data: categories, refresh, pending } = await useFetch<Group[]>(`/api/groups/byUser/${user.value.id}`, {
   deep: false,
   lazy: true,
   default: () => [],
