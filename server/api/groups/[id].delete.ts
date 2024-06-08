@@ -2,6 +2,9 @@ import { number, object } from 'zod'
 
 export default defineEventHandler(async (event) => {
   
+  // Get current user session 
+  let userSession = await getUserSession(event);
+
   // Get route params id
   const params = await getValidatedRouterParams(event, object({
     id: number({ coerce: true }),
@@ -20,6 +23,12 @@ export default defineEventHandler(async (event) => {
     eq(tables.groups.id, params.id)
   ).returning();
   
-  // TODO: remove this groupId from userSession
+  // Remove group_id from user session
+  const index = userSession.user.groupIds.indexOf(params.id);
+  if (index > -1) { // only splice array when item is found
+    userSession.user.groupIds.splice(index, 1); // 2nd parameter means remove one item only
+    await replaceUserSession(event, userSession)
+  }
+
   return sendNoContent(event, 204)
 })

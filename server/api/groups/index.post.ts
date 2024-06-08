@@ -2,6 +2,9 @@ import { object, string, number } from 'zod'
 
 export default defineEventHandler(async (event) => {
 
+  // Get current user session 
+  let userSession = await getUserSession(event);
+  
   // Verify body key types
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
@@ -23,7 +26,10 @@ export default defineEventHandler(async (event) => {
       groupId: group.id
     }).returning();
 
-    // TODO: add this groupId in userSession
+    // Push new group_id in user session
+    userSession.user.groupIds.push(group.id)
+    await replaceUserSession(event, userSession)
+    
     return sendNoContent(event, 201)
   }
 })
