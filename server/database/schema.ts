@@ -150,6 +150,7 @@ export const currenciesRelations = relations(currencies, ({ many }) => ({
 export const usersToGroups = sqliteTable('usersToGroups', {
   userId: integer('user_id').notNull().references(() => users.id),
   groupId: integer('group_id').notNull().references(() => groups.id),
+  permission: text('permission', { enum: ["ADMIN", "USER", "GUEST"] })
 }, (t) => ({
   pk: primaryKey({ columns: [t.userId, t.groupId] })
 }));

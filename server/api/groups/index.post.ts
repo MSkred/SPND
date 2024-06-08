@@ -23,7 +23,8 @@ export default defineEventHandler(async (event) => {
   if (group) {
     await useDrizzle().insert(tables.usersToGroups).values({
       userId: body.user_id,
-      groupId: group.id
+      groupId: group.id,
+      permission: 'ADMIN'
     }).returning();
 
     // Push new group_id in user session

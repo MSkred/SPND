@@ -52,7 +52,8 @@ export default oauth.googleEventHandler({
         }).returning().get();
         userGroups = await useDrizzle().insert(tables.usersToGroups).values({
           userId: user!.id,
-          groupId: group.id
+          groupId: group.id,
+          permission: 'ADMIN'
         }).returning({ id: tables.usersToGroups.groupId });
       }
       await setUserSession(event, {
