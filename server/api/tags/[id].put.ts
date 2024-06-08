@@ -1,5 +1,5 @@
 import { number, object, string } from 'zod'
-import RegExp from "~/utils/regexp";
+import EmojiValidation from "~/utils/regexp";
 
 export default defineEventHandler(async (event) => {
   // TODO verify if user is in the group 
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
-    icon: string().regex(RegExp().EmojiValidation, { message: 'Doit être un emoji' }).nullish(),
+    icon: string().regex(EmojiValidation, { message: 'Doit être un emoji' }).nullish(),
     color: string().nullish()
   }).parse)
 

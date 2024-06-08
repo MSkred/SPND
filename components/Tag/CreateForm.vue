@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { object, string, type output } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
-import RegExp from "~/utils/regexp";
+import EmojiValidation from "~/utils/regexp";
 const route = useRoute();
 const toast = useToast();
 
@@ -14,7 +14,7 @@ const schema = object({
     message: "Le nom doit faire minimum 2 caractères",
   }),
   icon: string()
-    .regex(RegExp().EmojiValidation, { message: "Doit être un emoji" })
+    .regex(EmojiValidation, { message: "Doit être un emoji" })
     .nullish(),
   color: string().nullish(),
 });

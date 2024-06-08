@@ -3,7 +3,7 @@ import { object, string, type output } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
 const route = useRoute();
 const toast = useToast();
-import RegExp from "~/utils/regexp";
+import EmojiValidation from "~/utils/regexp";
 
 const emits = defineEmits<{
   close: [];
@@ -13,7 +13,7 @@ const schema = object({
   name: string({ message: "Obligatoire" }).min(2, {
     message: "Le nom doit faire minimum 2 caractères",
   }),
-  icon: string().regex(RegExp().EmojiValidation, { message: "Doit être un emoji" })
+  icon: string().regex(EmojiValidation, { message: "Doit être un emoji" })
 });
 
 type Schema = output<typeof schema>;

@@ -1,5 +1,5 @@
 import { number, object, string } from 'zod'
-import RegExp from "~/utils/regexp";
+import EmojiValidation from "~/utils/regexp";
 
 export default defineEventHandler(async (event) => {
   // TODO: verify if user have admin permission
@@ -12,8 +12,7 @@ export default defineEventHandler(async (event) => {
   // Read and validate body from the request
   const body = await readValidatedBody(event, object({
     name: string().min(2, { message: "Must be 2 or more characters long" }),
-    // TODO: update Regexp access 
-    icon: string().regex(RegExp().EmojiValidation, { message: 'Doit être un emoji' })
+    icon: string().regex(EmojiValidation, { message: 'Doit être un emoji' })
   }).parse)
 
   const category = await useDrizzle().select({ groupId: tables.categories.groupId }).from(tables.categories).where(eq(tables.categories.id, params.id))

@@ -3,7 +3,7 @@ import { object, string, type output } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
 import { type Tag } from "~/server/utils/drizzle";
 const toast = useToast();
-import RegExp from "~/utils/regexp";
+import EmojiValidation from "~/utils/regexp";
 const props = defineProps<{
   tag: Tag;
 }>();
@@ -17,7 +17,7 @@ const schema = object({
     message: "Le nom doit faire minimum 2 caractères",
   }),
   icon: string()
-    .regex(RegExp().EmojiValidation, { message: "Doit être un emoji" })
+    .regex(EmojiValidation, { message: "Doit être un emoji" })
     .nullish(),
   color: string().nullish(),
 });

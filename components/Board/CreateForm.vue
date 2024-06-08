@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { object, string, number, type output } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
-import RegExp from "~/utils/regexp";
+import EmojiValidation from "~/utils/regexp";
 const route = useRoute();
 const toast = useToast();
 
@@ -13,7 +13,7 @@ const schema = object({
   name: string({ message: "Obligatoire" }).min(2, {
     message: "Le nom doit faire minimum 2 caractères",
   }),
-  icon: string().regex(RegExp().EmojiValidation, { message: "Doit être un emoji" }).nullish(),
+  icon: string().regex(EmojiValidation, { message: "Doit être un emoji" }).nullish(),
   color: string().nullish(),
   currency_id: number(),
   income: number().nonnegative().nullish(),
@@ -25,6 +25,7 @@ const schema = object({
 type Schema = output<typeof schema>;
 import { format, setDefaultOptions } from "date-fns";
 import { fr } from "date-fns/locale";
+
 setDefaultOptions({ locale: fr });
 
 const state = reactive({
