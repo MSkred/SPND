@@ -3,7 +3,10 @@ import { inArray } from 'drizzle-orm'
 export default defineEventHandler(async (event) => {
 
   // Get data from route query
-  let { q, groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { q?: String, groupId: number, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'key' | 'value', order: 'asc' | 'desc'};
+  let { q, groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { q?: String, groupId: string, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'key' | 'value', order: 'asc' | 'desc'};
+
+  // Verify if this user ve access to the expense's group
+  await requireUserGroupAccess(event, [parseInt(groupId)])
 
   if (boardIds?.length) {
     if (typeof boardIds === 'string') {

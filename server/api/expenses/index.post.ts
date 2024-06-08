@@ -16,6 +16,10 @@ export default defineEventHandler(async (event) => {
     group_id: number({ coerce: true }),
   }).parse)
 
+
+  // Verify if this user ve access to the expense's group
+  await requireUserGroupAccess(event, [body.group_id])
+
   let groupCurrency, expenseCurrency, group, ts;
   // Get linked group by id
   group = await useDrizzle().select().from(tables.groups).where(eq(tables.groups.id, body.group_id)).get()

@@ -6,6 +6,10 @@ export default defineEventHandler(async (event) => {
   const params = await getValidatedRouterParams(event, object({
     id: number({ coerce: true }),
   }).parse,)
+
+  // Verify if this user ve access to this group
+  await requireUserGroupAccess(event, [params.id])
+
   // SQL request
   const group = await useDrizzle()
     .select()

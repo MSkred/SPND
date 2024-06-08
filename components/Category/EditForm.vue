@@ -22,7 +22,7 @@ const schema = object({
 type Schema = output<typeof schema>;
 
 const state = reactive({
-  key: props.category.name,
+  name: props.category.name,
   icon: props.category.icon,
 });
 
@@ -57,7 +57,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <UFormGroup label="Nom de la catégorie" name="name" required>
       <UInput
         placeholder="ex: Alimentation, Transport, Shopping, …"
-        v-model="state.key"
+        v-model="state.name"
       />
     </UFormGroup>
     <UFormGroup label="Icône de la catégorie" name="icon" required>

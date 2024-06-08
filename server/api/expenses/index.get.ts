@@ -1,8 +1,11 @@
 export default defineEventHandler(async (event) => {
 
   // Get data from route query
-  const { groupId, q, tagIds, categoryIds, boardIds, sort, order } = getQuery(event) as { groupId: number, q?: string, tagIds?: String[], categoryIds?: String[],  boardIds?: String[], sort: 'name' | 'price' | 'startDate', order: 'asc' | 'desc'};
+  const { groupId, q, tagIds, categoryIds, boardIds, sort, order } = getQuery(event) as { groupId: string, q?: string, tagIds?: String[], categoryIds?: String[],  boardIds?: String[], sort: 'name' | 'price' | 'startDate', order: 'asc' | 'desc'};
   
+
+  // Verify if this user ve access to the expense's group
+  await requireUserGroupAccess(event, [parseInt(groupId)])
 
   // SQL request
   let expenses = await useDrizzle()

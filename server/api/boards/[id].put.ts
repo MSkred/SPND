@@ -2,13 +2,18 @@ import { number, object, string } from 'zod'
 import RegExp from "~/utils/regexp";
 
 export default defineEventHandler(async (event) => {
-  // TODO: verify if user is in the board's group 
   // TODO: verify if user have admin permission
 
   // Get route parameters
   const params = await getValidatedRouterParams(event, object({
     id: number({ coerce: true }),
   }).parse,)
+
+  const board = await useDrizzle().select({ groupId: tables.boards.groupId }).from(tables.boards).where(eq(tables.boards.id, params.id))
+  const groupIds = board.map(el => el.groupId)
+
+  // Verify if this user ve access to the board's group
+  await requireUserGroupAccess(event, groupIds)
 
   // Read and validate request body
   const body = await readValidatedBody(event, object({

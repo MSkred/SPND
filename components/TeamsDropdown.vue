@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const router = useRouter()
 const { user } = useUserSession();
-const { data: groups, refresh, pending } = await useFetch<Group[]>(`/api/groups/byUser/${user.value.id}`, {
+const { data: groups, refresh, pending } = await useFetch<Group[]>(`/api/groups/byUser`, {
   deep: false,
   lazy: true,
   default: () => [],

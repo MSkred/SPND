@@ -2,12 +2,12 @@ import { inArray } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
 
-  // TODO: verify if user is in the expense's group 
-
   // Destructure query from the request
-  let { groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { groupId: number, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'key' | 'value', order: 'asc' | 'desc'};
+  let { groupId, tagIds, boardIds, categoryIds, sort, order } = getQuery(event) as { groupId: string, categoryIds?: String[], tagIds?: String[], boardIds?: String[], sort: 'key' | 'value', order: 'asc' | 'desc'};
 
-  
+  // Verify if this user ve access to the expense's group
+  await requireUserGroupAccess(event, [parseInt(groupId)])
+
   if (boardIds?.length) { // Verify if boardIds query param is present
     
     if (typeof boardIds === 'string') { // Verify if the query param value is string

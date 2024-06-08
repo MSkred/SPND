@@ -2,7 +2,6 @@ import { object, string, number } from 'zod'
 import RegExp from "~/utils/regexp";
 
 export default defineEventHandler(async (event) => {
-  // TODO: verify if user is in the board's group 
   // TODO: verify if user have admin permission
 
   // Read and validate body 
@@ -18,6 +17,9 @@ export default defineEventHandler(async (event) => {
     end_date: string().nullish(),
     group_id: number({ coerce: true })
   }).parse)
+
+  // Verify if this user ve access to the group_id from body
+  await requireUserGroupAccess(event, [body.group_id])
 
   // Create board with data from body
   await useDrizzle().insert(tables.boards).values({

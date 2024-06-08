@@ -2,7 +2,6 @@ import { object, string, number } from 'zod'
 import RegExp from "~/utils/regexp";
 
 export default defineEventHandler(async (event) => {
-  // TODO: verify if user is in the category's group 
   // TODO: verify if user have admin permission
 
   // Read and validate request body
@@ -12,6 +11,10 @@ export default defineEventHandler(async (event) => {
     icon: string().regex(RegExp().EmojiValidation, { message: 'Doit être un emoji' }),
     group_id: number({ coerce: true })
   }).parse)
+
+
+  // Verify if this user ve access to this group from params
+  await requireUserGroupAccess(event, [body.group_id])
 
   // Create category with data from body
   await useDrizzle().insert(tables.categories).values({

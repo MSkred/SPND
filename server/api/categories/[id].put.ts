@@ -2,7 +2,6 @@ import { number, object, string } from 'zod'
 import RegExp from "~/utils/regexp";
 
 export default defineEventHandler(async (event) => {
-  // TODO: verify if user is in the category's group 
   // TODO: verify if user have admin permission
   
   // Get id params from route api
@@ -16,6 +15,12 @@ export default defineEventHandler(async (event) => {
     // TODO: update Regexp access 
     icon: string().regex(RegExp().EmojiValidation, { message: 'Doit être un emoji' })
   }).parse)
+
+  const category = await useDrizzle().select({ groupId: tables.categories.groupId }).from(tables.categories).where(eq(tables.categories.id, params.id))
+  const groupIds = category.map(el => el.groupId)
+
+  // Verify if this user ve access to the category's group
+  await requireUserGroupAccess(event, groupIds)
 
   // Update row by id in the category table
   await useDrizzle().update(tables.categories).set({

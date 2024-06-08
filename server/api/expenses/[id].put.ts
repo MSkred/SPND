@@ -1,7 +1,6 @@
 import { object, string, number } from 'zod'
 
 export default defineEventHandler(async (event) => {
-  // TODO: verify if user is in the expense's group 
   // TODO: verify if user have admin permission
 
   // Get id parameter from path
@@ -9,6 +8,12 @@ export default defineEventHandler(async (event) => {
     id: number({ coerce: true }),
   }).parse,)
 
+
+  const expense = await useDrizzle().select({ groupId: tables.expenses.groupId }).from(tables.expenses).where(eq(tables.expenses.id, params.id))
+  const groupIds = expense.map(el => el.groupId)
+
+  // Verify if this user ve access to the expense's group
+  await requireUserGroupAccess(event, groupIds)
 
   // Read and validate data from request body
   const body = await readValidatedBody(event, object({

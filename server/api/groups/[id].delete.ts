@@ -1,12 +1,14 @@
-import { number, object, string } from 'zod'
+import { number, object } from 'zod'
 
 export default defineEventHandler(async (event) => {
-  // TODO verify if user is in the group 
   
   // Get route params id
   const params = await getValidatedRouterParams(event, object({
     id: number({ coerce: true }),
   }).parse,)
+
+  // Verify if this user ve access to this group
+  await requireUserGroupAccess(event, [params.id])
 
   // Delete all row with this paramsId in usersToGroups table
   await useDrizzle().delete(tables.usersToGroups).where(
