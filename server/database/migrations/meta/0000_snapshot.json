@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "a2f889c2-438d-4584-a5ab-3bcd214ceeb1",
+  "id": "531e809a-96ac-46c0-ba6e-aa6ba46a62dd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "boards": {
@@ -40,7 +40,8 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": 0
         },
         "objective": {
           "name": "objective",
@@ -59,13 +60,6 @@
         "end_date": {
           "name": "end_date",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "today": {
-          "name": "today",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -152,14 +146,7 @@
           "name": "icon",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "group_id": {
@@ -288,6 +275,13 @@
         },
         "price": {
           "name": "price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "convertered_price": {
+          "name": "convertered_price",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -708,7 +702,15 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "usersToGroups_user_id_group_id_pk": {
+          "columns": [
+            "group_id",
+            "user_id"
+          ],
+          "name": "usersToGroups_user_id_group_id_pk"
+        }
+      },
       "uniqueConstraints": {}
     }
   },
@@ -717,5 +719,8 @@
     "schemas": {},
     "tables": {},
     "columns": {}
+  },
+  "internal": {
+    "indexes": {}
   }
 }

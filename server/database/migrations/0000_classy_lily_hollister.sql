@@ -3,11 +3,10 @@ CREATE TABLE `boards` (
 	`name` text NOT NULL,
 	`icon` text,
 	`color` text,
-	`income` integer,
+	`income` integer DEFAULT 0,
 	`objective` integer NOT NULL,
 	`start_date` text NOT NULL,
 	`end_date` text,
-	`today` integer,
 	`group_id` integer NOT NULL,
 	`currency_id` integer NOT NULL,
 	`created_at` text NOT NULL,
@@ -19,8 +18,7 @@ CREATE TABLE `boards` (
 CREATE TABLE `categories` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
-	`icon` text,
-	`color` text,
+	`icon` text NOT NULL,
 	`group_id` integer NOT NULL,
 	`created_at` text NOT NULL,
 	`updated_at` text NOT NULL,
@@ -41,6 +39,7 @@ CREATE TABLE `expenses` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
 	`price` integer NOT NULL,
+	`convertered_price` integer NOT NULL,
 	`expense_rate` integer NOT NULL,
 	`start_date` text NOT NULL,
 	`end_date` text,
@@ -94,6 +93,7 @@ CREATE TABLE `users` (
 CREATE TABLE `usersToGroups` (
 	`user_id` integer NOT NULL,
 	`group_id` integer NOT NULL,
+	PRIMARY KEY(`group_id`, `user_id`),
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON UPDATE no action ON DELETE no action
 );
